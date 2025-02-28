@@ -1,32 +1,62 @@
-import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import * as Font from "expo-font";
-import { InriaSerif_400Regular, InriaSerif_700Bold } from "@expo-google-fonts/inria-serif";
-import Login from './src/modules/Login';
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import LottieView from 'lottie-react-native';
+import Login from './src/modules/Login'; 
+
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [animationFinished, setAnimationFinished] = useState(false);
 
   useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        InriaSerif_Regular: InriaSerif_400Regular,
-        InriaSerif_Bold: InriaSerif_700Bold,
-      });
-      setFontsLoaded(true);
+    async function prepare() {
+      try {
+       
+        await new Promise(resolve => setTimeout(resolve, 3000)); 
+      } catch (e) {
+        console.warn(e);
+      } finally {
+    
+        setAppIsReady(true);
+      }
     }
-    loadFonts();
+
+    prepare();
   }, []);
 
-  if (!fontsLoaded) {
-    return <ActivityIndicator size="large" color="#fff" />;
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+  
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady) {
+    return null; 
   }
 
+  if (!animationFinished) {
+    return (
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        
+        <LottieView
+          source={require('./src/Lotties/logoBlanco2.json')}
+          autoPlay
+          loop={false}
+          onAnimationFinish={() => setAnimationFinished(true)}
+          style={styles.animation}
+        />
+      </View>
+    );
+  }
+
+  
   return (
     <View style={styles.container}>
-      <Login/>
-      <StatusBar style="auto" />
+      <Login />
     </View>
   );
 }
@@ -34,8 +64,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  animation: {
+    width: 500,
+    height: 500,
   },
 });
