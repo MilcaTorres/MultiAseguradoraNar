@@ -4,6 +4,8 @@ import * as Font from "expo-font";
 import { InriaSerif_400Regular, InriaSerif_700Bold } from "@expo-google-fonts/inria-serif";
 import Login from './src/modules/Login';
 import { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -24,10 +26,10 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Login/>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <BottomTabNavigator />
+      <StatusBar style="light" />
+    </NavigationContainer>
   );
 }
 
