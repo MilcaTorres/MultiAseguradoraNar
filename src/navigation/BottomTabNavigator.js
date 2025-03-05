@@ -6,8 +6,28 @@ import Customers from '../modules/Customers';
 import Quote from '../modules/Quote';
 import Statistics from '../modules/Statistics';
 import HomeScreen from '../modules/Home';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function HomeStack(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false, tabBarStyle: { display: 'none' } }}/>
+    </Stack.Navigator>
+  );
+}
+
+function getTabBarVisibility(route) {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? "HomeScreen";
+  if (routeName === "HomeScreen") {
+    return { display: "none" }; 
+  }
+  return { display: "flex" };
+}
 
 export default function BottomTabNavigator() {
   return (
@@ -44,8 +64,12 @@ export default function BottomTabNavigator() {
       />
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
-        options={{ headerShown: false, title: 'Inicio' }}
+        component={HomeStack}
+        options={({ route }) => ({
+          headerShown: false,
+          title: 'Inicio',
+          tabBarStyle: getTabBarVisibility(route), 
+        })}
       />
       <Tab.Screen
         name="Statistics"
