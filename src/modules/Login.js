@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import AppColors from '../kernel/AppColors';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function Login() {
+export default function Login({navigation}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -27,7 +27,8 @@ export default function Login() {
             onChangeText={setPassword}
          />
 
-        <TouchableOpacity> 
+        <TouchableOpacity
+        onPress={() => navigation.navigate('Inicio')}> 
             <Text style={styles.buttonText}>Iniciar sesión</Text>
         </TouchableOpacity>
 

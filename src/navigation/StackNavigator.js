@@ -5,13 +5,15 @@ import Customers from '../modules/Customers';
 import Quote from '../modules/Quote';
 import Statistics from '../modules/Statistics';
 import Profile from '../modules/Profile';
+import Login from '../modules/Login';
 
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Inicio" component={Home} />
+      <Stack.Navigator initialRouteName='Login'>
+      <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
+      <Stack.Screen name="Inicio" component={Home} options={{headerShown: false}} />
       <Stack.Screen name="Clientes" component={Customers} />
       <Stack.Screen name="Cotizar" component={Quote} />
       <Stack.Screen name="Estadísticas" component={Statistics} />

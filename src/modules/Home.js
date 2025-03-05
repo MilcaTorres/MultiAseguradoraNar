@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import AppColors from '../kernel/AppColors';
 
 export default function HomeScreen({ navigation }) {
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
         <View style={styles.welcome}>
             <Text style={styles.text}>Bienvenido Juan Pérez</Text>
         </View>
@@ -14,39 +15,52 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.welcome}>
             <Text style={styles.text}>¿Qué desea hacer?</Text>
         </View>
-        <View>
-            <TouchableOpacity style={styles.button}
-            onPress={() => navigation.navigate('Clientes')}>
-                <Image source={require("../../assets/img/customers.png")} style={styles.imgButton}/>
-                <Text style={styles.buttonText}>Clientes</Text>
+
+         {/* Contenedor de botones en filas */}
+        <View style={styles.buttonsContainer}>
+          {/* Primera fila */}
+          <View style={styles.row}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Clientes')}>
+              <Image source={require("../../assets/img/customers.png")} style={styles.imgButton}/>
+              <Text style={styles.buttonText}>Clientes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}
-            onPress={() => navigation.navigate('Cotizar')}>
-                <Image source={require("../../assets/img/quote.png")} style={styles.imgButton}/>
-                <Text style={styles.buttonText}>Cotizar</Text>
+            
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cotizar')}>
+              <Image source={require("../../assets/img/quote.png")} style={styles.imgButton}/>
+              <Text style={styles.buttonText}>Cotizar</Text>
             </TouchableOpacity>
+          </View>
+
+          {/* Segunda fila */}
+          <View style={styles.row}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Estadísticas')}>
+              <Image source={require("../../assets/img/statistics.png")} style={styles.imgButton}/>
+              <Text style={styles.buttonText}>Estadísticas</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Perfil')}>
+              <Image source={require("../../assets/img/profile.png")} style={styles.imgButton}/>
+              <Text style={styles.buttonText}>Perfil</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-            <TouchableOpacity style={styles.button}
-            onPress={() => navigation.navigate('Estadísticas')}>
-                <Image source={require("../../assets/img/statistics.png")} style={styles.imgButton}/>
-                <Text style={styles.buttonText}>Estadísticas</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}
-            onPress={() => navigation.navigate('Perfil')}>
-                <Image source={require("../../assets/img/profile.png")} style={styles.imgButton}/>
-                <Text style={styles.buttonText}>Perfil</Text>
-            </TouchableOpacity>
-    </ScrollView>
+    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+    safeArea: {
         flex: 1,
         backgroundColor: AppColors.BACKGROUND,
-        //alignItems: "center",
+      },
+    container: {
+        flex: 1,
+        backgroundColor: AppColors.BACKGROUND,
         paddingHorizontal: 20,
-        width: '100%'
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     welcome: {
         backgroundColor: AppColors.MAIN_COLOR,
@@ -70,9 +84,16 @@ const styles = StyleSheet.create({
         borderRadius: 20
     },
     buttonsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap'
+        alignItems: 'center', 
+        marginTop: 20,
     },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 20,
+        marginBottom: 15,
+      },
     button: {
         backgroundColor: AppColors.MAIN_COLOR,
         width: 160,
@@ -80,12 +101,14 @@ const styles = StyleSheet.create({
         padding: 14,
         borderRadius: 20,
         marginBottom: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     buttonText: {
         color: AppColors.TEXT_WHITE,
         fontSize: 16,
-        fontFamily: "InriaSerif_Bold"
+        fontFamily: "InriaSerif_Bold",
+        textAlign: 'center'
     },
     imgButton: {
         width: 62,

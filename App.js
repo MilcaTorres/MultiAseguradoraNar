@@ -9,18 +9,33 @@ import { useEffect, useState, useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import AppColors from './src/kernel/AppColors';
+import StackNavigator from './src/navigation/StackNavigator';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  // const [fontsLoaded, setFontsLoaded] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
 
+  // useEffect(() => {
+  //         async function loadFonts() {
+  //           await Font.loadAsync({
+  //             InriaSerif_Regular: InriaSerif_400Regular,
+  //             InriaSerif_Bold: InriaSerif_700Bold,
+  //           });
+  //           setFontsLoaded(true);
+  //         }
+  //         loadFonts();
+  //       }, []);
+      
+  //       if (!fontsLoaded) {
+  //         return <ActivityIndicator size="large" color="#fff" />;
+  // }
+
   useEffect(() => {
     async function prepare() {
-      try {
-       
+      try {  
         await new Promise(resolve => setTimeout(resolve, 3000)); 
       } catch (e) {
         console.warn(e);
@@ -58,34 +73,12 @@ export default function App() {
     );
   }
 
-
-  useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        InriaSerif_Regular: InriaSerif_400Regular,
-        InriaSerif_Bold: InriaSerif_700Bold,
-      });
-      setFontsLoaded(true);
-    }
-    loadFonts();
-  }, []);
-
-  if (!fontsLoaded) {
-    return <ActivityIndicator size="large" color="#fff" />;
-  }
-
   return (
-    <View style={styles.container}>
-      <Login />
-    </View>
+    <NavigationContainer>
+      <StackNavigator />
+      <StatusBar style="light" />
+    </NavigationContainer>
   );
-
-  // return (
-  //   <NavigationContainer>
-  //     <BottomTabNavigator />
-  //     <StatusBar style="light" />
-  //   </NavigationContainer>
-  // );
 }
 
 const styles = StyleSheet.create({
