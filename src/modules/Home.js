@@ -20,12 +20,12 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.buttonsContainer}>
           {/* Primera fila */}
           <View style={styles.row}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Clientes')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('MainApp', { screen: 'Customers' })}>
               <Image source={require("../../assets/img/customers.png")} style={styles.imgButton}/>
               <Text style={styles.buttonText}>Clientes</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cotizar')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('MainApp', { screen: 'Quote' })}>
               <Image source={require("../../assets/img/quote.png")} style={styles.imgButton}/>
               <Text style={styles.buttonText}>Cotizar</Text>
             </TouchableOpacity>
@@ -33,12 +33,12 @@ export default function HomeScreen({ navigation }) {
 
           {/* Segunda fila */}
           <View style={styles.row}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Estadísticas')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('MainApp', { screen: 'Statistics' })}>
               <Image source={require("../../assets/img/statistics.png")} style={styles.imgButton}/>
               <Text style={styles.buttonText}>Estadísticas</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Perfil')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('MainApp', { screen: 'Profile' })}>
               <Image source={require("../../assets/img/profile.png")} style={styles.imgButton}/>
               <Text style={styles.buttonText}>Perfil</Text>
             </TouchableOpacity>
@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginBottom: 10,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginHorizontal: 10, 
     },
     buttonText: {
         color: AppColors.TEXT_WHITE,

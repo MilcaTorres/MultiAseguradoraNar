@@ -1,11 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import StackNavigator from './StackNavigator';
 import Profile from '../modules/Profile';
 import { Ionicons } from '@expo/vector-icons';
 import Customers from '../modules/Customers';
 import Quote from '../modules/Quote';
 import Statistics from '../modules/Statistics';
+import HomeScreen from '../modules/Home';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,7 +44,7 @@ export default function BottomTabNavigator() {
       />
       <Tab.Screen
         name="Home"
-        component={StackNavigator}
+        component={HomeScreen}
         options={{ headerShown: false, title: 'Inicio' }}
       />
       <Tab.Screen

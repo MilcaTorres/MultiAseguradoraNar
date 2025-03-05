@@ -6,6 +6,7 @@ import Quote from '../modules/Quote';
 import Statistics from '../modules/Statistics';
 import Profile from '../modules/Profile';
 import Login from '../modules/Login';
+import BottomTabNavigator from './BottomTabNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,10 +15,11 @@ export default function StackNavigator() {
       <Stack.Navigator initialRouteName='Login'>
       <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
       <Stack.Screen name="Inicio" component={Home} options={{headerShown: false}} />
-      <Stack.Screen name="Clientes" component={Customers} />
-      <Stack.Screen name="Cotizar" component={Quote} />
-      <Stack.Screen name="Estadísticas" component={Statistics} />
-      <Stack.Screen name="Perfil" component={Profile} />
+      <Stack.Screen name="Clientes" component={Customers} options={{headerShown: false}}/>
+      <Stack.Screen name="Cotizar" component={Quote} options={{headerShown: false}}/>
+      <Stack.Screen name="Estadísticas" component={Statistics} options={{headerShown: false}}/>
+      <Stack.Screen name="Perfil" component={Profile} options={{headerShown: false}}/>
+      <Stack.Screen name='MainApp' component={BottomTabNavigator} options={{headerShown: false}}/>
     </Stack.Navigator>
   );
 }
