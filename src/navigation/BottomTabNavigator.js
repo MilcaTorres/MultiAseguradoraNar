@@ -8,6 +8,7 @@ import Statistics from '../modules/Statistics';
 import HomeScreen from '../modules/Home';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import AppColors from '../kernel/AppColors';
 
 
 const Tab = createBottomTabNavigator();
@@ -36,31 +37,36 @@ export default function BottomTabNavigator() {
         tabBarIcon: ({ color, size }) => {
           let iconName;
           if (route.name === 'Customers') {
-            iconName = 'person';
+            iconName = 'people';
           } else if (route.name === 'Quote') {
-            iconName = 'person';
+            iconName = 'cash';
           } else if (route.name === 'Home') {
             iconName = 'home';
           } else if (route.name === 'Statistics') {
-            iconName = 'person';
+            iconName = 'bar-chart';
           } else if (route.name === 'Profile') {
             iconName = 'person';
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: '#878484',
+        tabBarStyle: {
+          backgroundColor: AppColors.MAIN_COLOR,
+          paddingBottom: 5,
+          height: 60
+        }
       })}
     >
       <Tab.Screen
         name="Customers"
         component={Customers}
-        options={{ headerShown: false, title: 'Clientes' }}
+        options={{ headerShown: true, title: 'Clientes' }}
       />
       <Tab.Screen
         name="Quote"
         component={Quote}
-        options={{ headerShown: false, title: 'Cotizar' }}
+        options={{ headerShown: true, title: 'Cotizar' }}
       />
       <Tab.Screen
         name="Home"
@@ -74,12 +80,12 @@ export default function BottomTabNavigator() {
       <Tab.Screen
         name="Statistics"
         component={Statistics}
-        options={{ headerShown: false, title: 'Estadísticas' }}
+        options={{ headerShown: true, title: 'Estadísticas' }}
       />
       <Tab.Screen 
         name="Profile" 
         component={Profile} 
-        options={{ headerShown: false, title: 'Perfil' }}
+        options={{ headerShown: true, title: 'Perfil' }}
         />
     </Tab.Navigator>
   );

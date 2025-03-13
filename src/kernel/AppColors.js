@@ -2,9 +2,10 @@ export default {
     BACKGROUND: '#FFFFFF',
     MAIN_COLOR: '#0B1956',
     TEXT_WHITE: '#FFFFFF',
+    TEXT_GRAY: '#d9dbde',
     LABEL_COLOR: '#D2E8FF',
     BUTTON_COLOR: '#F6F5F5',
     INPUT_BACKGROUND: '#FFFFFF',
     BUTTON_BACKGROUND: "#FFFFFF",
-    SHADOW: '#212529'
+    SHADOW: '#000'
 }

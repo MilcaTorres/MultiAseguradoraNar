@@ -7,6 +7,8 @@ import Statistics from '../modules/Statistics';
 import Profile from '../modules/Profile';
 import Login from '../modules/Login';
 import BottomTabNavigator from './BottomTabNavigator';
+import CustomersPolicies from '../modules/CustomersPolicies';
+import PolicyDetails from '../modules/PolicyDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +22,9 @@ export default function StackNavigator() {
       <Stack.Screen name="Estadísticas" component={Statistics} options={{headerShown: false}}/>
       <Stack.Screen name="Perfil" component={Profile} options={{headerShown: false}}/>
       <Stack.Screen name='MainApp' component={BottomTabNavigator} options={{headerShown: false}}/>
+      <Stack.Screen name='PolizasClientes' component={CustomersPolicies} options={{title: 'Clientes' }}/>
+      <Stack.Screen name='PolizasDetalles' component={PolicyDetails} options={{title: 'Clientes' }}/>
+
     </Stack.Navigator>
   );
 }
