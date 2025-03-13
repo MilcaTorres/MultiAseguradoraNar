@@ -32,7 +32,8 @@ export default function Login({navigation}) {
             <Text style={styles.buttonText}>Iniciar sesión</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+        onPress={()=> navigation.navigate('Contra')}>
             <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
 

@@ -9,12 +9,15 @@ import Login from '../modules/Login';
 import BottomTabNavigator from './BottomTabNavigator';
 import CustomersPolicies from '../modules/CustomersPolicies';
 import PolicyDetails from '../modules/PolicyDetails';
+import ResetPassEmail from '../modules/ResetPassEmail';
+import VerifyCode from '../modules/VerifyCode';
+import NewPassword from '../modules/NewPassword';
 
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
   return (
-      <Stack.Navigator initialRouteName='Login'>
+    <Stack.Navigator initialRouteName='Login'>
       <Stack.Screen name="Login" component={Login} options={{headerShown: false}} />
       <Stack.Screen name="Inicio" component={Home} options={{headerShown: false}} />
       <Stack.Screen name="Clientes" component={Customers} options={{headerShown: false}}/>
@@ -24,7 +27,9 @@ export default function StackNavigator() {
       <Stack.Screen name='MainApp' component={BottomTabNavigator} options={{headerShown: false}}/>
       <Stack.Screen name='PolizasClientes' component={CustomersPolicies} options={{title: 'Clientes' }}/>
       <Stack.Screen name='PolizasDetalles' component={PolicyDetails} options={{title: 'Clientes' }}/>
-
+      <Stack.Screen name="Contra" component={ResetPassEmail} options={{headerShown:true}}/>
+      <Stack.Screen name="Code" component={VerifyCode} options={{headerShown:true}}/>
+      <Stack.Screen name="NewPass" component={NewPassword} options={{headerShown:true}}/>
     </Stack.Navigator>
   );
 }
