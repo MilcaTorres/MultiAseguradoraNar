@@ -1,6 +1,7 @@
 export default {
     BACKGROUND: '#FFFFFF',
     MAIN_COLOR: '#0B1956',
+    //#24326b
     TEXT_WHITE: '#FFFFFF',
     TEXT_GRAY: '#d9dbde',
     LABEL_COLOR: '#D2E8FF',
