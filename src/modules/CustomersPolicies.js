@@ -11,55 +11,43 @@ import AppColors from "../kernel/AppColors";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function Customers({ navigation }) {
+export default function CustomersPolicies({ navigation }) {
   const [search, setSearch] = useState("");
 
-  const customers = [
+  const policies = [
     {
-      nombre: "Juan Pérez",
-      rfc: "JUPEN13E3R4",
-      curp: "JUPE009080808E",
-      edad: 45,
+      poliza: "Póliza No°1",
+      seguro: "Seguro de vida",
+      vigencia: "20/02/2025",
+      mensualidad: 200,
     },
     {
-      nombre: "Alexis Campos",
-      rfc: "ALCAN13E3R4",
-      curp: "ALCA009080808E",
-      edad: 32,
+      poliza: "Póliza No°2",
+      seguro: "Seguro de viaje",
+      vigencia: "30/03/2028",
+      mensualidad: 800,
     },
     {
-      nombre: "Aurora Escalante",
-      rfc: "AUESN13E3R4",
-      curp: "AUES009080808E",
-      edad: 26,
+      poliza: "Póliza No°3",
+      seguro: "Seguro de gastos médicos",
+      vigencia: "16/10/2025",
+      mensualidad: 600,
     },
     {
-      nombre: "Sergio Hernández",
-      rfc: "SEHEN13E3R4",
-      curp: "SEHE009080808E",
-      edad: 56,
-    },
-    {
-      nombre: "Fernanda Franco",
-      rfc: "FEFRN13E3R4",
-      curp: "FEFR009080808E",
-      edad: 24,
-    },
-    {
-      nombre: "Fabiola Estrada",
-      rfc: "FAESN13E3R4",
-      curp: "FAES009080808E",
-      edad: 38,
+      poliza: "Póliza No°4",
+      seguro: "Seguro de viaje",
+      vigencia: "22/08/2026",
+      mensualidad: 800,
     },
   ];
 
-  const filteredCustomers = customers.filter((customer) => {
+  const filteredPolicies = policies.filter((policy) => {
     const searchText = search.toLowerCase();
 
     return (
-      customer.nombre.toLowerCase().includes(searchText) ||
-      customer.rfc.toLowerCase().includes(searchText) ||
-      customer.curp.toLowerCase().includes(searchText)
+      policy.poliza.toLowerCase().includes(searchText) ||
+      policy.seguro.toLowerCase().includes(searchText) ||
+      policy.vigencia.toLowerCase().includes(searchText)
     );
   });
 
@@ -84,30 +72,27 @@ export default function Customers({ navigation }) {
             />
           </View>
 
-          {filteredCustomers.map((customer, index) => (
+          {filteredPolicies.map((policy, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardContent}>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>{customer.nombre}</Text>
+                  <Text style={styles.label}>{policy.poliza}</Text>
+                  <Text>{policy.seguro}</Text>
                   <Text>
-                    <Text style={styles.label}>RFC: </Text>
-                    {customer.rfc}
+                    <Text style={styles.label}>Vigencia: </Text>
+                    {policy.vigencia}
                   </Text>
                   <Text>
-                    <Text style={styles.label}>CURP: </Text>
-                    {customer.curp}
-                  </Text>
-                  <Text>
-                    <Text style={styles.label}>Edad: </Text>
-                    {customer.edad} años
+                    <Text style={styles.label}>Mensualidad: </Text>$
+                    {policy.mensualidad}
                   </Text>
                 </View>
 
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => navigation.navigate("PolizasClientes")}
+                  onPress={() => navigation.navigate("PolizasDetalles")}
                 >
-                  <Text style={styles.textButton}>Ver Pólizas</Text>
+                  <Text style={styles.textButton}>Ver más</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -129,7 +114,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     backgroundColor: AppColors.BACKGROUND,
   },
   searchContainer: {

@@ -32,7 +32,8 @@ export default function Login({navigation}) {
             <Text style={styles.buttonText}>Iniciar sesión</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+        onPress={()=> navigation.navigate('Contra')}>
             <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
 
@@ -45,14 +46,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: AppColors.MAIN_COLOR,
         alignItems: "center",
+        justifyContent: 'center',
         paddingHorizontal: 20,
         width: '100%'
       },
       logo: {
         width: 260,
         height: 260,
-        marginBottom: 20,
-        marginTop: 20
+        marginBottom: 20
       },
       title: {
         fontSize: 24,
