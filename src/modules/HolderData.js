@@ -58,7 +58,7 @@ export default function HolderDataScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Insurence')} // O 'InsuredData' si quieres mantener ese flujo
+            onPress={() => navigation.navigate('Seguros')} 
           >
             <Text style={styles.buttonText}>Cotizar</Text>
           </TouchableOpacity>

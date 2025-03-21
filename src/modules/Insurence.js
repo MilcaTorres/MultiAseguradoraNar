@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
 import AppColors from '../kernel/AppColors';
 import CustomHeader from '../modules/CustomHeader';
 
@@ -14,13 +14,19 @@ export default function LifeInsuranceQuoteScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {[1, 2, 3, 4].map((item, index) => (
           <View key={index} style={styles.card}>
-            <View>
-              <Text style={styles.insuranceTitle}>Aseguradora {item}</Text>
-              <Text style={styles.priceText}>Monto de la prima: $50,160</Text>
+            
+            {/* Contenedor de imagen + texto */}
+            <View style={styles.insuranceContainer}>
+              <Image source={require('../../assets/img/life-insurance.png')} style={styles.insuranceImage} />
+              <View style={styles.textContainer}>
+                <Text style={styles.insuranceTitle}>Aseguradora {item}</Text>
+                <Text style={styles.priceText}>Monto de la prima: $50,160</Text>
+              </View>
             </View>
+
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('InsuranceDetail')}
+              onPress={() => navigation.navigate('DatosSeguro')}
             >
               <Text style={styles.buttonText}>Seleccionar</Text>
             </TouchableOpacity>
@@ -57,6 +63,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
   },
+  insuranceContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 10, 
+  },
+  textContainer: {
+    flexShrink: 1,
+  },
   insuranceTitle: { fontWeight: 'bold', fontSize: 16 },
   priceText: { marginTop: 4, color: '#666' },
   button: {
@@ -74,4 +88,5 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     backgroundColor: '#fff',
   },
+  insuranceImage: { width: 80, height: 80, resizeMode: 'contain' },
 });

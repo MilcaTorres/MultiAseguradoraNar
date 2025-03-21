@@ -15,6 +15,7 @@ import NewPassword from '../modules/NewPassword';
 //Agregué esta importación
 import HolderData from '../modules/HolderData';
 import Insurence from '../modules/Insurence';
+import InsuranceQuote from '../modules/InsuranceQuote';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,7 @@ export default function StackNavigator() {
       
       <Stack.Screen name="DatosTitular" component={HolderData} options={{headerShown: false}}/>
       <Stack.Screen name="Seguros" component={Insurence} options={{headerShown: false}}/>
+      <Stack.Screen name='DatosSeguro' component={InsuranceQuote} options={{headerShown: false}}  />
     </Stack.Navigator>
   );
 }
