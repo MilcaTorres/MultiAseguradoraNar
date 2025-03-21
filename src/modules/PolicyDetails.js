@@ -28,6 +28,9 @@ export default function PolicyDetails({ navigation }) {
     <SafeAreaView style={styles.safeContainer}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
+          <View style={styles.labelName}>
+            <Text style={styles.textName}>Póliza No°1</Text>
+          </View>
           {policies.map((policy, index) => (
             <View key={index} style={styles.card}>
               <View style={styles.cardContent}>
@@ -71,6 +74,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: AppColors.BACKGROUND,
+  },
+  labelName: {
+    backgroundColor: AppColors.MAIN_COLOR,
+    width: "90%",
+    padding: 14,
+    borderRadius: 50,
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  textName: {
+    color: AppColors.TEXT_WHITE,
+    fontSize: 20,
+    fontFamily: "InriaSerif_Bold",
+    fontWeight: "bold",
   },
   card: {
     width: "90%",

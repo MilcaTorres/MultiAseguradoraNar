@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-} from "react-native";
+import {View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView} from "react-native";
 import AppColors from "../kernel/AppColors";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -183,6 +176,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
+    fontFamily: "InriaSerif_Regular"
   },
   button: {
     padding: 10,
@@ -193,6 +187,6 @@ const styles = StyleSheet.create({
   textButton: {
     color: AppColors.TEXT_WHITE,
     fontSize: 14,
-    fontWeight: "bold",
+    fontFamily: "InriaSerif_Bold"
   },
 });

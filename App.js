@@ -14,28 +14,18 @@ import StackNavigator from './src/navigation/StackNavigator';
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  // const [fontsLoaded, setFontsLoaded] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
-
-  // useEffect(() => {
-  //         async function loadFonts() {
-  //           await Font.loadAsync({
-  //             InriaSerif_Regular: InriaSerif_400Regular,
-  //             InriaSerif_Bold: InriaSerif_700Bold,
-  //           });
-  //           setFontsLoaded(true);
-  //         }
-  //         loadFonts();
-  //       }, []);
-      
-  //       if (!fontsLoaded) {
-  //         return <ActivityIndicator size="large" color="#fff" />;
-  // }
 
   useEffect(() => {
     async function prepare() {
       try {  
+
+        // await Font.loadAsync({
+        //   InriaSerif_Regular: InriaSerif_400Regular,
+        //   InriaSerif_Bold: InriaSerif_700Bold,
+        // });
+        
         await new Promise(resolve => setTimeout(resolve, 3000)); 
       } catch (e) {
         console.warn(e);
