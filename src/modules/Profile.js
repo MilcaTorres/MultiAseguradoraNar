@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
+import CustomHeader from "./CustomHeader";
+import AppColors from "../kernel/AppColors";
 
 export default function Profile() {
   const [userData, setUserData] = useState({
@@ -45,82 +56,118 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView>
+      <CustomHeader title="Perfil" />
+        <View style={styles.container}>
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>Nombre*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.nombre}
+                editable={false}
+              />
+            </View>
 
-      <View style={styles.inputRow}>
-        <View style={styles.inputContainer}>
-          <Text>Nombre*</Text>
-          <TextInput style={styles.input} value={userData.nombre} editable={false} />
+            <View style={styles.inputContainer}>
+              <Text>Apellido paterno*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.apellidoPaterno}
+                editable={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>Apellido materno*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.apellidoMaterno}
+                editable={false}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text>Correo electrónico*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.email}
+                editable={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>RFC*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.rfc}
+                editable={false}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text>Domicilio*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.domicilio}
+                editable={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>Teléfono*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.telefono}
+                editable={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>Nueva contraseña:</Text>
+              <TextInput
+                style={[styles.input, styles.editableInput]}
+                secureTextEntry={true}
+                value={userData.nuevaContrasena}
+                onChangeText={(text) =>
+                  setUserData({ ...userData, nuevaContrasena: text })
+                }
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text>Confirmar Contraseña*</Text>
+              <TextInput
+                style={[styles.input, styles.editableInput]}
+                secureTextEntry={true}
+                value={userData.confirmarContrasena}
+                onChangeText={(text) =>
+                  setUserData({ ...userData, confirmarContrasena: text })
+                }
+              />
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>Guardar</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.inputContainer}>
-          <Text>Apellido paterno*</Text>
-          <TextInput style={styles.input} value={userData.apellidoPaterno} editable={false} />
-        </View>
-      </View>
-
-      <View style={styles.inputRow}>
-        <View style={styles.inputContainer}>
-          <Text>Apellido materno*</Text>
-          <TextInput style={styles.input} value={userData.apellidoMaterno} editable={false} />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text>Correo electrónico*</Text>
-          <TextInput style={styles.input} value={userData.email} editable={false} />
-        </View>
-      </View>
-
-      <View style={styles.inputRow}>
-        <View style={styles.inputContainer}>
-          <Text>RFC*</Text>
-          <TextInput style={styles.input} value={userData.rfc} editable={false} />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text>Domicilio*</Text>
-          <TextInput style={styles.input} value={userData.domicilio} editable={false} />
-        </View>
-      </View>
-
-      <View style={styles.inputRow}>
-        <View style={styles.inputContainer}>
-          <Text>Teléfono*</Text>
-          <TextInput style={styles.input} value={userData.telefono} editable={false} />
-        </View>
-      </View>
-
-      <View style={styles.inputRow}>
-        <View style={styles.inputContainer}>
-          <Text>Nueva contraseña:</Text>
-          <TextInput
-            style={[styles.input, styles.editableInput]}
-            secureTextEntry={true}
-            value={userData.nuevaContrasena}
-            onChangeText={(text) => setUserData({ ...userData, nuevaContrasena: text })}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text>Confirmar Contraseña*</Text>
-          <TextInput
-            style={[styles.input, styles.editableInput]}
-            secureTextEntry={true}
-            value={userData.confirmarContrasena}
-            onChangeText={(text) => setUserData({ ...userData, confirmarContrasena: text })}
-          />
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Guardar</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
   container: {
     flex: 1,
     padding: 20,

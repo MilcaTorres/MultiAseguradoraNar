@@ -31,11 +31,9 @@ export default function StackNavigator() {
       <Stack.Screen name='MainApp' component={BottomTabNavigator} options={{headerShown: false}}/>
       <Stack.Screen name='PolizasClientes' component={CustomersPolicies} options={{title: 'Clientes' }}/>
       <Stack.Screen name='PolizasDetalles' component={PolicyDetails} options={{title: 'Clientes' }}/>
-      <Stack.Screen name="Contra" component={ResetPassEmail} options={{headerShown:true}}/>
-      <Stack.Screen name="Code" component={VerifyCode} options={{headerShown:true}}/>
-      <Stack.Screen name="NewPass" component={NewPassword} options={{headerShown:true}}/>
-
-      
+      <Stack.Screen name="Contra" component={ResetPassEmail} options={{headerShown: false}}/>
+      <Stack.Screen name="Code" component={VerifyCode} options={{headerShown: false}}/>
+      <Stack.Screen name="NewPass" component={NewPassword} options={{headerShown: false}}/>
       <Stack.Screen name="DatosTitular" component={HolderData} options={{headerShown: false}}/>
       <Stack.Screen name="Seguros" component={Insurence} options={{headerShown: false}}/>
       <Stack.Screen name='DatosSeguro' component={InsuranceQuote} options={{headerShown: false}}  />

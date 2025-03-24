@@ -8,9 +8,9 @@ const Stack = createNativeStackNavigator();
 export default function CustomersStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Clientes" component={Customers} options={{ title: "Clientes" }} />
-      <Stack.Screen name="PolizasClientes" component={CustomersPolicies} options={{ title: "Clientes" }} />
-      <Stack.Screen name="PolizasDetalles" component={PolicyDetails} options={{ title: "Clientes" }} />
+      <Stack.Screen name="Clientes" component={Customers} options={{ headerShown: false }} />
+      <Stack.Screen name="PolizasClientes" component={CustomersPolicies} options={{ headerShown: false }} />
+      <Stack.Screen name="PolizasDetalles" component={PolicyDetails} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

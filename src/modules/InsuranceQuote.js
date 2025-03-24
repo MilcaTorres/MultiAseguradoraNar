@@ -50,15 +50,6 @@ export default function InsuranceQuote({ navigation }) {
           <Text style={styles.buttonText}>Emitir</Text>
         </TouchableOpacity>
       </View>
-      
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <Text>Clientes</Text>
-        <Text>Cotizar</Text>
-        <Text>Inicio</Text>
-        <Text>Estadísticas</Text>
-        <Text>Perfil</Text>
-      </View>
     </SafeAreaView>
   );
 }
@@ -77,6 +68,5 @@ const styles = StyleSheet.create({
   coverageTitle: { fontWeight: 'bold', marginBottom: 8 },
   buttonContainer: { flexDirection: 'row', justifyContent: 'space-evenly', padding: 16 },
   button: { backgroundColor: AppColors.MAIN_COLOR, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8 },
-  buttonText: { color: 'white', fontWeight: 'bold' },
-  bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 12, borderTopWidth: 1, borderColor: '#ccc', backgroundColor: '#fff' },
+  buttonText: { color: 'white', fontWeight: 'bold' }
 });

@@ -8,7 +8,7 @@ export default function HolderDataScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView>
       <CustomHeader title="Cotizar"/>
         <View style={styles.container}>
           
@@ -70,7 +70,6 @@ export default function HolderDataScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
-  scrollContainer: { paddingVertical: 20 },
   container: { padding: 20 },
   title: { fontSize: 24, color: AppColors.MAIN_COLOR, marginBottom: 20, fontFamily: "InriaSerif_Bold" },
   input: { borderWidth: 1, borderColor: '#ccc', padding: 12, marginVertical: 10, borderRadius: 8, backgroundColor: '#fff' },

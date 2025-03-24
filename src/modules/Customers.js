@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView} from
 import AppColors from "../kernel/AppColors";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import CustomHeader from "./CustomHeader";
 
 export default function Customers({ navigation }) {
   const [search, setSearch] = useState("");
@@ -58,6 +59,7 @@ export default function Customers({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
+      <CustomHeader title="Clientes"/>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           {/* Barra de búsqueda */}

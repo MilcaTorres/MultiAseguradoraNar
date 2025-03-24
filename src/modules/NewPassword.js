@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import styles from "../kernel/Styles";
+import CustomHeader from "./CustomHeader";
 
 export default function NewPassword() {
   const [password, setPassword] = useState("");
@@ -29,8 +30,9 @@ export default function NewPassword() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Solicitud de cambio de contraseña</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <CustomHeader title="Solicitud de cambio de contraseña"/>
+      <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.instruction}>Ingrese su nueva contraseña</Text>
         <Text style={styles.label}>Contraseña*</Text>
@@ -54,5 +56,6 @@ export default function NewPassword() {
         </TouchableOpacity>
       </View>
     </View>
+    </SafeAreaView>
   );
 }

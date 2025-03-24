@@ -1,6 +1,11 @@
 import { StyleSheet } from "react-native";
+import AppColors from "./AppColors";
 
 export default StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: AppColors.BACKGROUND,
+  },
   container: {
     flex: 1,
     backgroundColor: "#F8F8F8",

@@ -33,15 +33,6 @@ export default function LifeInsuranceQuoteScreen({ navigation }) {
           </View>
         ))}
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <Text>Clientes</Text>
-        <Text>Cotizar</Text>
-        <Text>Inicio</Text>
-        <Text>Estadísticas</Text>
-        <Text>Perfil</Text>
-      </View>
     </SafeAreaView>
   );
 }
@@ -80,13 +71,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: { color: '#fff', fontWeight: 'bold' },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-  },
   insuranceImage: { width: 80, height: 80, resizeMode: 'contain' },
 });

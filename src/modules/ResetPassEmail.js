@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../kernel/Styles";
+import CustomHeader from '../modules/CustomHeader';
 
 export default function ResetPassEmail() {
   const [email, setEmail] = useState("");
@@ -19,8 +20,9 @@ export default function ResetPassEmail() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Solicitud de cambio de contraseña</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <CustomHeader title="Solicitud de cambio de contraseña" />
+      <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.instruction}>
           Ingrese el correo electrónico asociado a la cuenta
@@ -38,5 +40,6 @@ export default function ResetPassEmail() {
         </TouchableOpacity>
       </View>
     </View>
+    </SafeAreaView>
   );
 }

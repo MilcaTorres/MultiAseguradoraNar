@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, SafeAreaView, ScrollView } from "react-native";
 import { BarChart } from "react-native-chart-kit";
 import AppColors from "../kernel/AppColors";
+import CustomHeader from "./CustomHeader";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -34,8 +35,10 @@ export default function Statistics() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Estadísticas</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView>
+      <CustomHeader title="Estadísticas"/>
+      <View style={styles.container}>
       <View style={styles.cuotasContainer}>
         <Text style={styles.cuotasText}>Cuotas a cumplir: {cuotasACumplir} emisiones</Text>
       </View>
@@ -64,27 +67,25 @@ export default function Statistics() {
         <Text style={styles.chartLabel}>Meses</Text>
       </View>
     </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
   container: {
     flex: 1,
     backgroundColor: AppColors.BACKGROUND,
     alignItems: "center",
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: AppColors.MAIN_COLOR,
-    marginBottom: 10,
-  },
   cuotasContainer: {
     backgroundColor: AppColors.MAIN_COLOR,
     padding: 10,
     borderRadius: 8,
     marginBottom: 20,
+    marginTop: 20
   },
   cuotasText: {
     color: AppColors.TEXT_WHITE,

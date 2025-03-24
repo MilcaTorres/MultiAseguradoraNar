@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import AppColors from "../kernel/AppColors";
 import { Ionicons } from "@expo/vector-icons";
+import CustomHeader from "./CustomHeader";
 
 export default function PolicyDetails({ navigation }) {
   const policies = [
@@ -26,6 +27,7 @@ export default function PolicyDetails({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
+      <CustomHeader title="Clientes"/>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <View style={styles.labelName}>

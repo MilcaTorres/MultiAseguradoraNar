@@ -2,14 +2,13 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Profile from "../modules/Profile";
 import { Ionicons } from "@expo/vector-icons";
-import Customers from "../modules/Customers";
-import Quote from "../modules/Quote";
 import Statistics from "../modules/Statistics";
 import HomeScreen from "../modules/Home";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import AppColors from "../kernel/AppColors";
 import CustomersStack from "./CustomersStackNavigator";
+import QuoteStack from "./QuoteStackNavigator";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -69,8 +68,8 @@ export default function BottomTabNavigator() {
       />
       <Tab.Screen
         name="Quote"
-        component={Quote}
-        options={{ headerShown: true, title: "Cotizar" }}
+        component={QuoteStack}
+        options={{ headerShown: false, title: "Cotizar" }}
       />
       <Tab.Screen
         name="Home"
@@ -84,12 +83,12 @@ export default function BottomTabNavigator() {
       <Tab.Screen
         name="Statistics"
         component={Statistics}
-        options={{ headerShown: true, title: "Estadísticas" }}
+        options={{ headerShown: false, title: "Estadísticas" }}
       />
       <Tab.Screen
         name="Profile"
         component={Profile}
-        options={{ headerShown: true, title: "Perfil" }}
+        options={{ headerShown: false, title: "Perfil" }}
       />
     </Tab.Navigator>
   );

@@ -21,5 +21,6 @@ const styles = StyleSheet.create({
         color: AppColors.TEXT_WHITE,
         fontSize: 30,
         fontFamily: "InriaSerif_Bold",
+        fontWeight: 'bold'
     },
 });

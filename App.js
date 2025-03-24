@@ -7,7 +7,6 @@ import { InriaSerif_400Regular, InriaSerif_700Bold } from "@expo-google-fonts/in
 import Login from './src/modules/Login';
 import { useEffect, useState, useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import AppColors from './src/kernel/AppColors';
 import StackNavigator from './src/navigation/StackNavigator';
 
