@@ -30,7 +30,7 @@ export default function ResetPassEmail() {
         <Text style={styles.label}>Correo electrónico*</Text>
         <TextInput
           style={styles.input}
-          placeholder="example@mail.com"
+          placeholder="example@gmail.com"
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}

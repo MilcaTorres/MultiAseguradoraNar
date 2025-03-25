@@ -129,11 +129,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: AppColors.TEXT_WHITE,
     marginTop: 24,
-    elevation: 15,
-    shadowColor: AppColors.SHADOW,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    // elevation: 15,
+    // shadowColor: AppColors.SHADOW,
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
   },
   searchIcon: {
     marginRight: 10,
@@ -152,13 +152,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderColor: AppColors.MAIN_COLOR,
     backgroundColor: AppColors.TEXT_WHITE,
-    // Sombra en Android
-    elevation: 8,
-    // Sombra en iOS
-    shadowColor: AppColors.SHADOW,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    // // Sombra en Android
+    // elevation: 8,
+    // // Sombra en iOS
+    // shadowColor: AppColors.SHADOW,
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.3,
+    // shadowRadius: 4,
   },
   cardContent: {
     flexDirection: "row",

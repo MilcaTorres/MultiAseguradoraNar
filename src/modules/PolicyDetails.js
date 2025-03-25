@@ -101,13 +101,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderColor: AppColors.MAIN_COLOR,
     backgroundColor: AppColors.TEXT_WHITE,
-    // Sombra en Android
-    elevation: 8,
-    // Sombra en iOS
-    shadowColor: AppColors.SHADOW,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    // // Sombra en Android
+    // elevation: 8,
+    // // Sombra en iOS
+    // shadowColor: AppColors.SHADOW,
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.3,
+    // shadowRadius: 4,
   },
   cardContent: {
     flexDirection: "row",

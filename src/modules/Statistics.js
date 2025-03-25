@@ -36,8 +36,8 @@ export default function Statistics() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView>
       <CustomHeader title="Estadísticas"/>
+      <ScrollView>
       <View style={styles.container}>
       <View style={styles.cuotasContainer}>
         <Text style={styles.cuotasText}>Cuotas a cumplir: {cuotasACumplir} emisiones</Text>
@@ -84,8 +84,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.MAIN_COLOR,
     padding: 10,
     borderRadius: 8,
-    marginBottom: 20,
-    marginTop: 20
+    marginBottom: 20
   },
   cuotasText: {
     color: AppColors.TEXT_WHITE,
