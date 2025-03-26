@@ -20,7 +20,7 @@ export default function Login({ navigation }) {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3000/nar/usuarios/login', {
+      const response = await fetch('http://192.168.111.241:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,6 @@ export default function Login({ navigation }) {
       const data = await response.json();
 
       if(response.ok){
-        Alert.alert("Éxito", "Inicio de sesión correcto");
         navigation.navigate("Inicio");
       } else {
         Alert.alert("Error", data.message || "Error en el login");
