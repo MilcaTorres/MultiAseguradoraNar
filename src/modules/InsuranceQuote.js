@@ -1,7 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
-import AppColors from '../kernel/AppColors';
-import CustomHeader from '../modules/CustomHeader';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Image,
+} from "react-native";
+import AppColors from "../kernel/AppColors";
+import CustomHeader from "../modules/CustomHeader";
 
 export default function InsuranceQuote({ navigation }) {
   return (
@@ -11,14 +19,16 @@ export default function InsuranceQuote({ navigation }) {
 
       {/* Information Section */}
       <View style={styles.infoSection}>
-        <View style={styles.infoCard}>
-          <Text style={styles.infoCardText}>Información sobre el seguro</Text>
+        <View style={styles.welcome}>
+          <Text style={styles.text}>Información sobre el seguro: </Text>
         </View>
 
         <View style={styles.insuranceContainer}>
-          <Image source={require('../../assets/img/life-insurance.png')} style={styles.insuranceImage} />
+          <Image
+            source={require("../../assets/img/life-insurance.png")}
+            style={styles.insuranceImage}
+          />
           <Text style={styles.insuranceType}>Seguro de vida 1</Text>
-
         </View>
       </View>
 
@@ -44,7 +54,10 @@ export default function InsuranceQuote({ navigation }) {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.buttonText}>Volver</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
@@ -57,28 +70,62 @@ export default function InsuranceQuote({ navigation }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
-  infoSection: { alignItems: 'center', marginVertical: 10 },
+  infoSection: { alignItems: "center", marginVertical: 10 },
   infoCard: {
     backgroundColor: AppColors.MAIN_COLOR, // Fondo azul
     padding: 12,
     marginVertical: 10, // Espaciado superior e inferior
-    alignItems: 'center', // Centrar el texto
-    justifyContent: 'center',
+    alignItems: "center", // Centrar el texto
+    justifyContent: "center",
   },
   infoCardText: {
-    color: 'white',  // Texto blanco
-    fontWeight: 'bold',
+    color: "white", // Texto blanco
+    fontWeight: "bold",
     fontSize: 18,
-    textAlign: 'center',
+    textAlign: "center",
   },
-  insuranceContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
-  insuranceType: { fontSize: 24, fontWeight: 'bold', marginRight: 10 },
-  insuranceImage: { width: 80, height: 80, resizeMode: 'contain' },
-  card: { backgroundColor: '#fff', padding: 16, margin: 10, borderRadius: 12, borderWidth: 1, borderColor: '#ccc' },
-  cardTitle: { fontWeight: 'bold', marginBottom: 8 },
+  insuranceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  welcome: {
+      backgroundColor: AppColors.MAIN_COLOR,
+      width: "96%",
+      padding: 14,
+      borderRadius: 3,
+      alignItems: "center",
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    text: {
+      color: AppColors.TEXT_WHITE,
+      fontSize: 20,
+      fontFamily: "InriaSerif_Bold",
+    },
+  insuranceType: { fontSize: 24, fontWeight: "bold", marginRight: 10 },
+  insuranceImage: { width: 80, height: 80, resizeMode: "contain" },
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    margin: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  cardTitle: { fontWeight: "bold", marginBottom: 8 },
   coverages: { padding: 16 },
-  coverageTitle: { fontWeight: 'bold', marginBottom: 8 },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-evenly', padding: 16 },
-  button: { backgroundColor: AppColors.MAIN_COLOR, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8 },
-  buttonText: { color: 'white', fontWeight: 'bold' }
+  coverageTitle: { fontWeight: "bold", marginBottom: 8 },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    padding: 16,
+  },
+  button: {
+    backgroundColor: AppColors.MAIN_COLOR,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  buttonText: { color: "white", fontWeight: "bold" },
 });
