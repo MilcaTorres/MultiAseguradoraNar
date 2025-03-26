@@ -7,14 +7,16 @@ export default function LifeInsuranceQuoteScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
-      <CustomHeader title="Cotizar"/>
+      <CustomHeader title="Cotizar" />
 
-      <Text style={styles.subtitle}>Cotización del seguro: vida</Text>
+      <View style={styles.infoCard}>
+        <Text style={styles.infoCardText}>Cotización del Seguro</Text>
+      </View>
 
       <ScrollView contentContainerStyle={styles.container}>
         {[1, 2, 3, 4].map((item, index) => (
           <View key={index} style={styles.card}>
-            
+
             {/* Contenedor de imagen + texto */}
             <View style={styles.insuranceContainer}>
               <Image source={require('../../assets/img/life-insurance.png')} style={styles.insuranceImage} />
@@ -49,15 +51,27 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 12,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
   },
   insuranceContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    gap: 10, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1, // Permite que el contenido ocupe todo el espacio disponible
+  },
+  infoCard: {
+    backgroundColor: AppColors.MAIN_COLOR, // Fondo azul
+    padding: 12,
+    marginVertical: 10, // Espaciado superior e inferior
+    alignItems: 'center', // Centrar el texto
+    justifyContent: 'center',
+  },
+  infoCardText: {
+    color: 'white',  // Texto blanco
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
   },
   textContainer: {
     flexShrink: 1,
@@ -69,7 +83,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
+    flexShrink: 1, // Evita que el botón se expanda demasiado
   },
   buttonText: { color: '#fff', fontWeight: 'bold' },
-  insuranceImage: { width: 80, height: 80, resizeMode: 'contain' },
+  insuranceImage: { width: 50, height: 50 },
 });

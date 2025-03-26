@@ -63,14 +63,16 @@ const styles = StyleSheet.create({
     padding: 16,
     marginVertical: 12,
     borderRadius:12,
-    
+    borderWidth: 1,
+    borderColor: AppColors.MAIN_COLOR,
+    /*
     borderWidth: 1,
     borderColor: '#ccc',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    elevation: 2,
+    elevation: 2,*/
   },
   cardText: {
     fontSize: 18,

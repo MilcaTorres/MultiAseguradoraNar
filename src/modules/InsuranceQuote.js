@@ -7,20 +7,21 @@ export default function InsuranceQuote({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
-      <CustomHeader title="Cotizar"/>
-      
+      <CustomHeader title="Cotizar" />
+
       {/* Information Section */}
       <View style={styles.infoSection}>
-        <TouchableOpacity style={styles.infoButton}>
-          <Text style={styles.infoButtonText}>Información sobre el seguro</Text>
-        </TouchableOpacity>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoCardText}>Información sobre el seguro</Text>
+        </View>
+
         <View style={styles.insuranceContainer}>
-        <Image source={require('../../assets/img/life-insurance.png')} style={styles.insuranceImage} />
+          <Image source={require('../../assets/img/life-insurance.png')} style={styles.insuranceImage} />
           <Text style={styles.insuranceType}>Seguro de vida 1</Text>
-          
+
         </View>
       </View>
-      
+
       {/* Insured Person Details */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Datos del Asegurado</Text>
@@ -29,7 +30,7 @@ export default function InsuranceQuote({ navigation }) {
         <Text>Teléfono: +52 55 1234 5678</Text>
         <Text>Correo: juan.perez@email.com</Text>
       </View>
-      
+
       {/* Coverages */}
       <ScrollView contentContainerStyle={styles.coverages}>
         <Text style={styles.coverageTitle}>Coberturas:</Text>
@@ -40,10 +41,10 @@ export default function InsuranceQuote({ navigation }) {
         <Text>* Gastos Funerarios – Cobertura de costos.</Text>
         <Text>* Doble Indemnización – Pago doble si es accidental.</Text>
       </ScrollView>
-      
+
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>Volver</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
@@ -57,8 +58,19 @@ export default function InsuranceQuote({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
   infoSection: { alignItems: 'center', marginVertical: 10 },
-  infoButton: { backgroundColor: AppColors.MAIN_COLOR, padding: 10,  },
-  infoButtonText: { color: 'white', fontWeight: 'bold', fontSize: 24 },
+  infoCard: {
+    backgroundColor: AppColors.MAIN_COLOR, // Fondo azul
+    padding: 12,
+    marginVertical: 10, // Espaciado superior e inferior
+    alignItems: 'center', // Centrar el texto
+    justifyContent: 'center',
+  },
+  infoCardText: {
+    color: 'white',  // Texto blanco
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
+  },
   insuranceContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
   insuranceType: { fontSize: 24, fontWeight: 'bold', marginRight: 10 },
   insuranceImage: { width: 80, height: 80, resizeMode: 'contain' },
