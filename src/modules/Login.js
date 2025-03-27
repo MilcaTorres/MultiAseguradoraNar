@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -17,10 +18,10 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     if(!email || !password){
       Alert.alert("Error", "Por favor, ingrese correo y contraseña");
-      return;
+      return
     }
     try {
-      const response = await fetch('http://192.168.111.241:3000/nar/usuarios/login/agente', {
+      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,8 +33,10 @@ export default function Login({ navigation }) {
       });
 
       const data = await response.json();
+      console.log("Respuesta del servidor: ", data);
 
       if(response.ok){
+        await AsyncStorage.setItem("usuario", JSON.stringify(data));
         navigation.navigate("Inicio");
       } else {
         Alert.alert("Error", data.message || "Error en el login");

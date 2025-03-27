@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import AppColors from '../kernel/AppColors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen({ navigation }) {
+  const[nombre, setNombre] = useState("");
+  const[apellidoPaterno, setApellidoPaterno] = useState("");
+
+  useEffect(() =>{
+    const obtenerUsuario = async () => {
+      try {
+        const usuarioJSON = await AsyncStorage.getItem("usuario");
+        if(usuarioJSON){
+          const usuario = JSON.parse(usuarioJSON);
+          setNombre(usuario.nombre);
+          setApellidoPaterno(usuario.apellidoPaterno);
+        }
+      } catch (error){
+        console.log("Error al obtener datos del usuario: ", error);
+      }
+    };
+    obtenerUsuario();
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
         <View style={styles.welcome}>
-            <Text style={styles.text}>Bienvenido Juan Pérez</Text>
+            <Text style={styles.text}>Bienvenido {nombre} {apellidoPaterno}</Text>
         </View>
         <View>
         <Image source={require("../../assets/img/seguros.jpg")} style={styles.img}/>
@@ -74,7 +94,8 @@ const styles = StyleSheet.create({
     text: {
         color: AppColors.TEXT_WHITE,
         fontSize: 20,
-        fontFamily: "InriaSerif_Bold"
+        //fontFamily: "InriaSerif_Bold",
+        fontWeight: 'bold'
     },
     img: {
         width: 340,
@@ -108,8 +129,9 @@ const styles = StyleSheet.create({
     buttonText: {
         color: AppColors.TEXT_WHITE,
         fontSize: 16,
-        fontFamily: "InriaSerif_Bold",
-        textAlign: 'center'
+        //fontFamily: "InriaSerif_Bold",
+        textAlign: 'center',
+        fontWeight: 'bold'
     },
     imgButton: {
         width: 62,
