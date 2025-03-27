@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import {View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView} from "react-native";
+import React, { useEffect, useState } from "react";
+import {View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator} from "react-native";
 import AppColors from "../kernel/AppColors";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,45 +7,70 @@ import CustomHeader from "./CustomHeader";
 
 export default function Customers({ navigation }) {
   const [search, setSearch] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const customers = [
-    {
-      nombre: "Juan Pérez",
-      rfc: "JUPEN13E3R4",
-      curp: "JUPE009080808E",
-      edad: 45,
-    },
-    {
-      nombre: "Alexis Campos",
-      rfc: "ALCAN13E3R4",
-      curp: "ALCA009080808E",
-      edad: 32,
-    },
-    {
-      nombre: "Aurora Escalante",
-      rfc: "AUESN13E3R4",
-      curp: "AUES009080808E",
-      edad: 26,
-    },
-    {
-      nombre: "Sergio Hernández",
-      rfc: "SEHEN13E3R4",
-      curp: "SEHE009080808E",
-      edad: 56,
-    },
-    {
-      nombre: "Fernanda Franco",
-      rfc: "FEFRN13E3R4",
-      curp: "FEFR009080808E",
-      edad: 24,
-    },
-    {
-      nombre: "Fabiola Estrada",
-      rfc: "FAESN13E3R4",
-      curp: "FAES009080808E",
-      edad: 38,
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://192.168.100.15:3000/nar/clientes/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if(!response.ok){
+          throw new Error(`Error en la solicitud: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setCustomers(data);
+      } catch (error){
+        console.error("Error al obtener los clientes: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // const customers = [
+  //   {
+  //     nombre: "Juan Pérez",
+  //     rfc: "JUPEN13E3R4",
+  //     curp: "JUPE009080808E",
+  //     edad: 45,
+  //   },
+  //   {
+  //     nombre: "Alexis Campos",
+  //     rfc: "ALCAN13E3R4",
+  //     curp: "ALCA009080808E",
+  //     edad: 32,
+  //   },
+  //   {
+  //     nombre: "Aurora Escalante",
+  //     rfc: "AUESN13E3R4",
+  //     curp: "AUES009080808E",
+  //     edad: 26,
+  //   },
+  //   {
+  //     nombre: "Sergio Hernández",
+  //     rfc: "SEHEN13E3R4",
+  //     curp: "SEHE009080808E",
+  //     edad: 56,
+  //   },
+  //   {
+  //     nombre: "Fernanda Franco",
+  //     rfc: "FEFRN13E3R4",
+  //     curp: "FEFR009080808E",
+  //     edad: 24,
+  //   },
+  //   {
+  //     nombre: "Fabiola Estrada",
+  //     rfc: "FAESN13E3R4",
+  //     curp: "FAES009080808E",
+  //     edad: 38,
+  //   },
+  // ];
 
   const filteredCustomers = customers.filter((customer) => {
     const searchText = search.toLowerCase();
@@ -79,34 +104,25 @@ export default function Customers({ navigation }) {
             />
           </View>
 
-          {filteredCustomers.map((customer, index) => (
-            <View key={index} style={styles.card}>
-              <View style={styles.cardContent}>
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>{customer.nombre}</Text>
-                  <Text>
-                    <Text style={styles.label}>RFC: </Text>
-                    {customer.rfc}
-                  </Text>
-                  <Text>
-                    <Text style={styles.label}>CURP: </Text>
-                    {customer.curp}
-                  </Text>
-                  <Text>
-                    <Text style={styles.label}>Edad: </Text>
-                    {customer.edad} años
-                  </Text>
+          {loading ? (
+            <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
+          ) : (
+            filteredCustomers.map((customer, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.cardContent}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>{customer.nombre} {customer.apellidoPaterno}</Text>
+                    <Text><Text style={styles.label}>RFC: </Text>{customer.rfc}</Text>
+                    <Text><Text style={styles.label}>Edad: </Text>{customer.edad} años</Text>
+                    <Text><Text style={styles.label}>Correo: </Text>{customer.correo}</Text>
+                  </View>
+                  <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("PolizasClientes")}>
+                    <Text style={styles.textButton}>Ver Pólizas</Text>
+                  </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => navigation.navigate("PolizasClientes")}
-                >
-                  <Text style={styles.textButton}>Ver Pólizas</Text>
-                </TouchableOpacity>
               </View>
-            </View>
-          ))}
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
