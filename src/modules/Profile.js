@@ -11,8 +11,10 @@ import {
 } from "react-native";
 import CustomHeader from "./CustomHeader";
 import AppColors from "../kernel/AppColors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommonActions } from '@react-navigation/native';
 
-export default function Profile() {
+export default function Profile({ navigation }) {
   const [userData, setUserData] = useState({
     nombre: "Juan",
     apellidoPaterno: "Perez",
@@ -55,10 +57,20 @@ export default function Profile() {
     }, 1000);
   };
 
+  const doLogout = async () => {
+    await AsyncStorage.clear();
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
-      <CustomHeader title="Perfil" />
+        <CustomHeader title="Perfil" />
         <View style={styles.container}>
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
@@ -91,6 +103,17 @@ export default function Profile() {
             </View>
 
             <View style={styles.inputContainer}>
+              <Text>RFC*</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.rfc}
+                editable={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
               <Text>Correo electrónico*</Text>
               <TextInput
                 style={styles.input}
@@ -101,15 +124,6 @@ export default function Profile() {
           </View>
 
           <View style={styles.inputRow}>
-            <View style={styles.inputContainer}>
-              <Text>RFC*</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.rfc}
-                editable={false}
-              />
-            </View>
-
             <View style={styles.inputContainer}>
               <Text>Domicilio*</Text>
               <TextInput
@@ -143,7 +157,8 @@ export default function Profile() {
                 }
               />
             </View>
-
+          </View>
+          <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
               <Text>Confirmar Contraseña*</Text>
               <TextInput
@@ -159,6 +174,10 @@ export default function Profile() {
 
           <TouchableOpacity style={styles.button} onPress={handleSave}>
             <Text style={styles.buttonText}>Guardar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={doLogout}>
+            <Text style={styles.buttonText}>Cerrar Sesión</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -200,6 +219,13 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#002366",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  logoutButton: {
+    backgroundColor: "#DA1E28", 
     padding: 12,
     borderRadius: 8,
     alignItems: "center",

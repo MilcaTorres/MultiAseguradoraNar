@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import AppColors from "../kernel/AppColors";
-import {
-  Alert,
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import {Alert,Image,StyleSheet,Text,TextInput,TouchableOpacity,View,} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login({ navigation }) {
@@ -16,12 +8,12 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    if(!email || !password){
+    if (!email || !password) {
       Alert.alert("Error", "Por favor, ingrese correo y contraseña");
       return
     }
     try {
-      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
+      const response = await fetch('http://192.168.100.5:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,13 +27,13 @@ export default function Login({ navigation }) {
       const data = await response.json();
       console.log("Respuesta del servidor: ", data);
 
-      if(response.ok){
+      if (response.ok) {
         await AsyncStorage.setItem("usuario", JSON.stringify(data));
         navigation.navigate("Inicio");
       } else {
         Alert.alert("Error", data.message || "Error en el login");
       }
-    } catch (error){
+    } catch (error) {
       Alert.alert("Error", "No se pudo conectar con el servidor");
     }
   };
