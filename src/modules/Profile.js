@@ -134,14 +134,6 @@ export default function Profile({ navigation }) {
             </View>
           </View>
 
-          {/* Domicilio */}
-          <View style={styles.inputRow}>
-            <View style={styles.inputContainer}>
-              <Text>Domicilio*</Text>
-              <TextInput style={styles.input} value={userData.domicilio} editable={false} />
-            </View>
-          </View>
-
           {/* Teléfono */}
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>

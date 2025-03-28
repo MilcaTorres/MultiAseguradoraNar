@@ -13,7 +13,7 @@ export default function Login({ navigation }) {
       return
     }
     try {
-      const response = await fetch('http://192.168.100.5:3000/nar/usuarios/login/agente', {
+      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export default function Login({ navigation }) {
       });
 
       const data = await response.json();
-      console.log("Respuesta del servidor: ", data);
+      //console.log("Respuesta del servidor: ", data);
 
       if (response.ok) {
         await AsyncStorage.setItem("usuario", JSON.stringify(data));

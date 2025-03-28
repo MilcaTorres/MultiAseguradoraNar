@@ -78,14 +78,14 @@ export default function CustomersPolicies({ navigation }) {
             <View key={index} style={styles.card}>
               <View style={styles.cardContent}>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>{policy.poliza}</Text>
+                  <Text style={styles.label}>{`Póliza No° ${index + 1}`}</Text>
                   <Text>{policy.seguro}</Text>
                   <Text>
                     <Text style={styles.label}>Vigencia: </Text>
                     {policy.vigencia}
                   </Text>
                   <Text>
-                    <Text style={styles.label}>Mensualidad: </Text>$
+                    <Text style={styles.label}>Monto total: </Text>$
                     {policy.mensualidad}
                   </Text>
                 </View>

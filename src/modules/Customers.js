@@ -13,7 +13,7 @@ export default function Customers({ navigation }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://192.168.100.5:3000/nar/clientes/", {
+        const response = await fetch("http://192.168.100.15:3000/nar/clientes/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -33,52 +33,13 @@ export default function Customers({ navigation }) {
     fetchData();
   }, []);
 
-  // const customers = [
-  //   {
-  //     nombre: "Juan Pérez",
-  //     rfc: "JUPEN13E3R4",
-  //     curp: "JUPE009080808E",
-  //     edad: 45,
-  //   },
-  //   {
-  //     nombre: "Alexis Campos",
-  //     rfc: "ALCAN13E3R4",
-  //     curp: "ALCA009080808E",
-  //     edad: 32,
-  //   },
-  //   {
-  //     nombre: "Aurora Escalante",
-  //     rfc: "AUESN13E3R4",
-  //     curp: "AUES009080808E",
-  //     edad: 26,
-  //   },
-  //   {
-  //     nombre: "Sergio Hernández",
-  //     rfc: "SEHEN13E3R4",
-  //     curp: "SEHE009080808E",
-  //     edad: 56,
-  //   },
-  //   {
-  //     nombre: "Fernanda Franco",
-  //     rfc: "FEFRN13E3R4",
-  //     curp: "FEFR009080808E",
-  //     edad: 24,
-  //   },
-  //   {
-  //     nombre: "Fabiola Estrada",
-  //     rfc: "FAESN13E3R4",
-  //     curp: "FAES009080808E",
-  //     edad: 38,
-  //   },
-  // ];
-
   const filteredCustomers = customers.filter((customer) => {
     const searchText = search.toLowerCase();
 
     return (
-      customer.nombre.toLowerCase().includes(searchText) ||
-      customer.rfc.toLowerCase().includes(searchText) ||
-      customer.curp.toLowerCase().includes(searchText)
+      (customer.nombre?.toLowerCase().includes(searchText) ?? false) ||
+      (customer.rfc?.toLowerCase().includes(searchText) ?? false) ||
+      (customer.correo?.toLowerCase().includes(searchText) ?? false)
     );
   });
 
@@ -152,7 +113,7 @@ const styles = StyleSheet.create({
     borderColor: AppColors.MAIN_COLOR,
     borderRadius: 20,
     backgroundColor: AppColors.TEXT_WHITE,
-    marginTop: 24,
+    marginTop: 24
     // elevation: 15,
     // shadowColor: AppColors.SHADOW,
     // shadowOffset: { width: 0, height: 2 },
@@ -165,7 +126,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     paddingVertical: 10,
-    color: AppColors.TEXT_BLACK,
+    color: AppColors.TEXT_BLACK
   },
   card: {
     width: "90%",
