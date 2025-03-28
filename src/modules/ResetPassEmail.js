@@ -8,38 +8,49 @@ export default function ResetPassEmail() {
   const [email, setEmail] = useState("");
   const navigation = useNavigation();
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
     if (!email.includes("@") || !email.includes(".")) {
       Alert.alert("Error", "Ingrese un correo electrónico válido.");
       return;
     }
 
-    Alert.alert("Éxito", "Código enviado a " + email, [
-      { text: "OK", onPress: () => navigation.navigate("Code", { email }) },
-    ]);
+    try {
+      const response = await fetch('http://192.168.100.5:3000/nar/usuarios/recuperacion/generar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo: email }), // Ajuste para coincidir con el backend
+      });
+
+      if (response.ok) {
+        Alert.alert("Éxito", "Código enviado a " + email, [
+          { text: "OK", onPress: () => navigation.navigate("Code", { email }) },
+        ]);
+      } else {
+        Alert.alert("Error", "No se pudo enviar el código.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error al enviar el código.");
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <CustomHeader title="Solicitud de cambio de contraseña" />
+      <CustomHeader title="Recuperación de Contraseña" />
       <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.instruction}>
-          Ingrese el correo electrónico asociado a la cuenta
-        </Text>
-        <Text style={styles.label}>Correo electrónico*</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="example@gmail.com"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSendEmail}>
-          <Text style={styles.buttonText}>Enviar correo</Text>
-        </TouchableOpacity>
+        <View style={styles.card}>
+          <Text style={styles.instruction}>Ingrese su correo electrónico:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="example@gmail.com"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleSendEmail}>
+            <Text style={styles.buttonText}>Enviar código</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </SafeAreaView>
   );
 }
