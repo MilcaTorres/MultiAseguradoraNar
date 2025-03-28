@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator} from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator,
+} from "react-native";
 import AppColors from "../kernel/AppColors";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -13,18 +21,21 @@ export default function Customers({ navigation }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://192.168.100.15:3000/nar/clientes/", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if(!response.ok){
+        const response = await fetch(
+          "http://192.168.100.15:3000/nar/clientes/",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) {
           throw new Error(`Error en la solicitud: ${response.statusText}`);
         }
         const data = await response.json();
         setCustomers(data);
-      } catch (error){
+      } catch (error) {
         console.error("Error al obtener los clientes: ", error);
       } finally {
         setLoading(false);
@@ -45,26 +56,25 @@ export default function Customers({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-      <CustomHeader title="Clientes"/>
+      <CustomHeader title="Clientes" />
+      {/* Barra de búsqueda */}
+      <View style={styles.searchContainer}>
+        <Ionicons
+          name="search"
+          size={20}
+          color={AppColors.TEXT_GRAY}
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Buscar cliente..."
+          placeholderTextColor={AppColors.TEXT_GRAY}
+          value={search}
+          onChangeText={setSearch}
+        />
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-          {/* Barra de búsqueda */}
-          <View style={styles.searchContainer}>
-            <Ionicons
-              name="search"
-              size={20}
-              color={AppColors.TEXT_GRAY}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              style={styles.searchBar}
-              placeholder="Buscar cliente..."
-              placeholderTextColor={AppColors.TEXT_GRAY}
-              value={search}
-              onChangeText={setSearch}
-            />
-          </View>
-
           {loading ? (
             <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
           ) : (
@@ -72,12 +82,26 @@ export default function Customers({ navigation }) {
               <View key={index} style={styles.card}>
                 <View style={styles.cardContent}>
                   <View style={styles.textContainer}>
-                    <Text style={styles.label}>{customer.nombre} {customer.apellidoPaterno}</Text>
-                    <Text><Text style={styles.label}>RFC: </Text>{customer.rfc}</Text>
-                    <Text><Text style={styles.label}>Edad: </Text>{customer.edad} años</Text>
-                    <Text><Text style={styles.label}>Correo: </Text>{customer.correo}</Text>
+                    <Text style={styles.label}>
+                      {customer.nombre} {customer.apellidoPaterno}
+                    </Text>
+                    <Text>
+                      <Text style={styles.label}>RFC: </Text>
+                      {customer.rfc}
+                    </Text>
+                    <Text>
+                      <Text style={styles.label}>Edad: </Text>
+                      {customer.edad} años
+                    </Text>
+                    <Text>
+                      <Text style={styles.label}>Correo: </Text>
+                      {customer.correo}
+                    </Text>
                   </View>
-                  <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("PolizasClientes")}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate("PolizasClientes", {cliente : customer})}
+                  >
                     <Text style={styles.textButton}>Ver Pólizas</Text>
                   </TouchableOpacity>
                 </View>
@@ -113,7 +137,8 @@ const styles = StyleSheet.create({
     borderColor: AppColors.MAIN_COLOR,
     borderRadius: 20,
     backgroundColor: AppColors.TEXT_WHITE,
-    marginTop: 24
+    marginTop: 24,
+    alignSelf: 'center'
     // elevation: 15,
     // shadowColor: AppColors.SHADOW,
     // shadowOffset: { width: 0, height: 2 },
@@ -126,7 +151,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     paddingVertical: 10,
-    color: AppColors.TEXT_BLACK
+    color: AppColors.TEXT_BLACK,
   },
   card: {
     width: "90%",
@@ -155,7 +180,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    fontFamily: "InriaSerif_Regular"
+    fontFamily: "InriaSerif_Regular",
   },
   button: {
     padding: 10,
@@ -166,7 +191,7 @@ const styles = StyleSheet.create({
   textButton: {
     color: AppColors.TEXT_WHITE,
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: "bold",
     // fontFamily: "InriaSerif_Bold"
   },
 });
