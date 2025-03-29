@@ -7,27 +7,37 @@ export default function HomeScreen({ navigation }) {
   const[nombre, setNombre] = useState("");
   const[apellidoPaterno, setApellidoPaterno] = useState("");
 
-  useEffect(() =>{
+  useEffect(() => {
     const obtenerUsuario = async () => {
       try {
         const usuarioJSON = await AsyncStorage.getItem("usuario");
-        if(usuarioJSON){
+        if (usuarioJSON) {
           const usuario = JSON.parse(usuarioJSON);
-          setNombre(usuario.nombre);
-          setApellidoPaterno(usuario.apellidoPaterno);
+  
+          // Extraer los datos correctos dentro de `data._doc`
+          const usuarioData = usuario.data?._doc;
+  
+          if (usuarioData) {
+            setNombre(usuarioData.nombre);
+            setApellidoPaterno(usuarioData.apellidoPaterno);
+            //console.log("Nombre del usuario obtenido:", usuarioData);
+          } else {
+            console.log("Error: Estructura de datos inesperada", usuario);
+          }
         }
-      } catch (error){
+      } catch (error) {
         console.log("Error al obtener datos del usuario: ", error);
       }
     };
     obtenerUsuario();
   }, []);
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
         <View style={styles.welcome}>
-            <Text style={styles.text}>Bienvenido {nombre} {apellidoPaterno}</Text>
+            <Text style={styles.text}>Bienvenid@ {nombre} {apellidoPaterno}</Text>
         </View>
         <View>
         <Image source={require("../../assets/img/seguros.jpg")} style={styles.img}/>

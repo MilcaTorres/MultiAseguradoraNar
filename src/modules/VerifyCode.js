@@ -19,7 +19,7 @@ export default function VerifyCode() {
     }
 
     try {
-      const response = await fetch('http://192.168.100.5:3000/nar/usuarios/recuperacion/validar', {
+      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/recuperacion/validar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo: email, codigoRecuperacion: enteredCode }),

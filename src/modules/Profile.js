@@ -35,19 +35,28 @@ export default function Profile({ navigation }) {
     const obtenerUsuario = async () => {
       try {
         const usuarioJSON = await AsyncStorage.getItem("usuario");
+        //console.log("Datos obtenidos de AsyncStorage: ", usuarioJSON);
+        
         if (usuarioJSON) {
           const usuario = JSON.parse(usuarioJSON);
-          setUserData((prevState) => ({
-            ...prevState,
-            nombre: usuario.nombre || "",
-            apellidoPaterno: usuario.apellidoPaterno || "",
-            apellidoMaterno: usuario.apellidoMaterno || "",
-            email: usuario.correo || "", //Cambiar el email al campo correo de la base 
-            rfc: usuario.rfc || "",
-            domicilio: usuario.domicilio || "",
-            telefono: usuario.telefono || "",
-          }));
+        
+          if (usuario.data && usuario.data._doc) {
+            const datosUsuario = usuario.data._doc;
+        
+            setUserData((prevState) => ({
+              ...prevState,
+              nombre: datosUsuario.nombre || "",
+              apellidoPaterno: datosUsuario.apellidoPaterno || "",
+              apellidoMaterno: datosUsuario.apellidoMaterno || "",
+              email: datosUsuario.correo || "",
+              rfc: datosUsuario.rfc || "",
+              telefono: datosUsuario.telefono || "",
+            }));
+          } else {
+            console.log("Estructura de usuario inesperada:", usuario);
+          }
         }
+        
       } catch (error) {
         console.log("Error al obtener los datos del usuario:", error);
       }
