@@ -22,100 +22,106 @@ export default function CustomersPolicies({ route, navigation }) {
   useEffect(() => {
     // console.log("Cliente recibido: ", cliente);
     // console.log("ID del cliente:", cliente._id);
-        const fetchPolicies = async () => {
-          try {
-            const response = await fetch(`http://192.168.100.15:3000/nar/emisiones/cliente/${cliente._id}`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-
-            // console.log("Response Status: ", response.status);
-
-            if(!response.ok){
-              throw new Error(`Error en la solicitud: ${response.statusText}`);
-            }
-            const data = await response.json();
-            // console.log("Data recibida: ", data);
-            setPolicies(data.data);
-          } catch (error) {
-            console.error("Error al obtener las pólizas: ", error);
-          } finally {
-            setLoading(false);
+    const fetchPolicies = async () => {
+      try {
+        const response = await fetch(
+          `http://192.168.100.15:3000/nar/emisiones/cliente/${cliente._id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-        };
-        fetchPolicies();
-      }, [cliente]);
+        );
+
+        // console.log("Response Status: ", response.status);
+
+        if (!response.ok) {
+          throw new Error(`Error en la solicitud: ${response.statusText}`);
+        }
+        const data = await response.json();
+        // console.log("Data recibida: ", data);
+        setPolicies(data.data);
+      } catch (error) {
+        console.error("Error al obtener las pólizas: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPolicies();
+  }, [cliente]);
 
   // Filtrar pólizas por búsqueda
   const filteredPolicies = policies.filter((policy) => {
     const searchText = search.toLowerCase();
     return (
-      (policy.numeroPoliza.toString().includes(searchText)) || // Convierte numeroPoliza a string
-      (policy.nombreSeguro?.toLowerCase().includes(searchText)) ||
-      (policy.vigencia?.toLowerCase().includes(searchText))
+      policy.numeroPoliza.toString().includes(searchText) || // Convierte numeroPoliza a string
+      policy.nombreSeguro?.toLowerCase().includes(searchText) ||
+      policy.vigencia?.toLowerCase().includes(searchText)
     );
   });
-  
 
   return (
-        <SafeAreaView style={styles.safeContainer}>
-          <CustomHeader title={`${cliente.nombre} ${cliente.apellidoPaterno}`}/>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-              {/* Barra de búsqueda */}
-              <View style={styles.searchContainer}>
-                <Ionicons
-                  name="search"
-                  size={20}
-                  color={AppColors.TEXT_GRAY}
-                  style={styles.searchIcon}
-                />
-                <TextInput
-                  style={styles.searchBar}
-                  placeholder="Buscar póliza..."
-                  placeholderTextColor={AppColors.TEXT_GRAY}
-                  value={search}
-                  onChangeText={setSearch}
-                />
-              </View>
-    
-              {loading ? (
-                <ActivityIndicator size="large" color={AppColors.MAIN_COLOR}/>
-              ): filteredPolicies.length > 0 ? (
-                filteredPolicies.map((policy, index) => (
-                  <View key={index} style={styles.card}>
-                  <View style={styles.cardContent}>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.label}>Póliza No° {policy.numeroPoliza}</Text>
-                      <Text>{policy.nombreSeguro}</Text>
-                      <Text>
-                        <Text style={styles.label}>Vigencia: </Text>
-                        {policy.vigencia}
-                      </Text>
-                      <Text>
-                        <Text style={styles.label}>Monto total: </Text>$
-                        {policy.montoTotal}
-                      </Text>
-                    </View>
-    
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={() => navigation.navigate("PolizasDetalles", {policy})}
-                    >
-                      <Text style={styles.textButton}>Ver más</Text>
-                    </TouchableOpacity>
+    <SafeAreaView style={styles.safeContainer}>
+      <CustomHeader title={`${cliente.nombre} ${cliente.apellidoPaterno}`} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.container}>
+          {/* Barra de búsqueda */}
+          <View style={styles.searchContainer}>
+            <Ionicons
+              name="search"
+              size={20}
+              color={AppColors.TEXT_GRAY}
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Buscar póliza..."
+              placeholderTextColor={AppColors.TEXT_GRAY}
+              value={search}
+              onChangeText={setSearch}
+            />
+          </View>
+
+          {loading ? (
+            <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
+          ) : filteredPolicies.length > 0 ? (
+            filteredPolicies.map((policy, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.cardContent}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>
+                      Póliza No° {policy.numeroPoliza}
+                    </Text>
+                    <Text>{policy.nombreSeguro}</Text>
+                    <Text>
+                      <Text style={styles.label}>Vigencia: </Text>
+                      {policy.vigencia}
+                    </Text>
+                    <Text>
+                      <Text style={styles.label}>Monto total: </Text>$
+                      {policy.montoTotal}
+                    </Text>
                   </View>
+
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate("PolizasDetalles", {policy: policy})}
+                  >
+                    <Text style={styles.textButton}>Ver más</Text>
+                  </TouchableOpacity>
                 </View>
-                ))
-              ) : (
-                <Text style={styles.noDataText}>No hay pólizas registradas para este cliente</Text>
-              )}
-            </View>
-          </ScrollView>
-        </SafeAreaView>
-      );
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noDataText}>
+              No hay pólizas registradas para este cliente
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
