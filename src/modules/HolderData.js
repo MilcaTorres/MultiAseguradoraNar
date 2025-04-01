@@ -6,33 +6,31 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
+  DatePickerIOS,
+  DateTimePickerAndroid,
   ScrollView,
 } from "react-native";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
-import DateTimePicker from "react-native-modal-datetime-picker";
 
 export default function HolderDataScreen({ navigation }) {
   const [isHolderInsured, setIsHolderInsured] = useState(true);
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [insuredDateOfBirth, setInsuredDateOfBirth] = useState(new Date());
-  const [showInsuredDatePicker, setShowInsuredDatePicker] = useState(false);
 
-  const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setDateOfBirth(selectedDate);
-    }
+  const showDatePickerAndroid = () => {
+    DateTimePickerAndroid.open({
+      value: dateOfBirth,
+      onChange: (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+          setDateOfBirth(selectedDate);
+        }
+      },
+      mode: "date",
+    });
   };
-
-const onChangeInsuredDate = (event, selectedDate) => {
-    setShowInsuredDatePicker(false);
-    if (selectedDate) {
-      setInsuredDateOfBirth(selectedDate);
-    }
-  };
-
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -70,17 +68,22 @@ const onChangeInsuredDate = (event, selectedDate) => {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Fecha de nacimiento</Text>
             <TouchableOpacity
-              onPress={() => setShowDatePicker(true)}
+              onPress={
+                Platform.OS === "android"
+                  ? showDatePickerAndroid
+                  : () => setShowDatePicker(true)
+              }
               style={styles.dateInput}
             >
               <Text>{dateOfBirth.toLocaleDateString()}</Text>
             </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={dateOfBirth}
+
+            {/* DatePickerIOS para iOS */}
+            {Platform.OS === "ios" && showDatePicker && (
+              <DatePickerIOS
+                date={dateOfBirth}
                 mode="date"
-                display="default"
-                onChange={onChangeDate}
+                onDateChange={(selectedDate) => setDateOfBirth(selectedDate)}
               />
             )}
           </View>
@@ -157,25 +160,6 @@ const onChangeInsuredDate = (event, selectedDate) => {
                   style={styles.input}
                 />
               </View>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Fecha de nacimiento</Text>
-                <TouchableOpacity
-                  onPress={() => setShowInsuredDatePicker(true)}
-                  style={styles.dateInput}
-                >
-                  <Text>{insuredDateOfBirth.toLocaleDateString()}</Text>
-                </TouchableOpacity>
-                {showInsuredDatePicker && (
-                  <DateTimePicker
-                    value={insuredDateOfBirth}
-                    mode="date"
-                    display="default"
-                    onChange={onChangeInsuredDate}
-                  />
-                )}
-              </View>
-
             </View>
           )}
 
