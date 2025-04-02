@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import AppColors from "../kernel/AppColors";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,36 +19,43 @@ export default function Customers({ navigation }) {
   const [search, setSearch] = useState("");
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://192.168.111.194:3000/nar/clientes/", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error(`Error en la solicitud: ${response.statusText}`);
+      const data = await response.json();
+      setCustomers(data);
+    } catch (error) {
+      console.error("Error al obtener los clientes: ", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://192.168.100.15:3000/nar/clientes/",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`Error en la solicitud: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setCustomers(data);
-      } catch (error) {
-        console.error("Error al obtener los clientes: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(); // Carga los datos cuando la pantalla vuelve a enfocarse
+    }, [])
+  );
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+  };
+
   const filteredCustomers = customers.filter((customer) => {
     const searchText = search.toLowerCase();
-
     return (
       (customer.nombre?.toLowerCase().includes(searchText) ?? false) ||
       (customer.rfc?.toLowerCase().includes(searchText) ?? false) ||
@@ -59,12 +68,7 @@ export default function Customers({ navigation }) {
       <CustomHeader title="Clientes" />
       {/* Barra de búsqueda */}
       <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color={AppColors.TEXT_GRAY}
-          style={styles.searchIcon}
-        />
+        <Ionicons name="search" size={20} color={AppColors.TEXT_GRAY} style={styles.searchIcon} />
         <TextInput
           style={styles.searchBar}
           placeholder="Buscar cliente..."
@@ -73,7 +77,10 @@ export default function Customers({ navigation }) {
           onChangeText={setSearch}
         />
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         <View style={styles.container}>
           {loading ? (
             <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
@@ -82,25 +89,14 @@ export default function Customers({ navigation }) {
               <View key={index} style={styles.card}>
                 <View style={styles.cardContent}>
                   <View style={styles.textContainer}>
-                    <Text style={styles.label}>
-                      {customer.nombre} {customer.apellidoPaterno}
-                    </Text>
-                    <Text>
-                      <Text style={styles.label}>RFC: </Text>
-                      {customer.rfc}
-                    </Text>
-                    <Text>
-                      <Text style={styles.label}>Edad: </Text>
-                      {customer.edad} años
-                    </Text>
-                    <Text>
-                      <Text style={styles.label}>Correo: </Text>
-                      {customer.correo}
-                    </Text>
+                    <Text style={styles.label}>{customer.nombre} {customer.apellidoPaterno}</Text>
+                    <Text><Text style={styles.label}>RFC: </Text>{customer.rfc}</Text>
+                    <Text><Text style={styles.label}>Edad: </Text>{customer.edad} años</Text>
+                    <Text><Text style={styles.label}>Correo: </Text>{customer.correo}</Text>
                   </View>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate("PolizasClientes", {cliente : customer})}
+                    onPress={() => navigation.navigate("PolizasClientes", { cliente: customer })}
                   >
                     <Text style={styles.textButton}>Ver Pólizas</Text>
                   </TouchableOpacity>
@@ -138,12 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: AppColors.TEXT_WHITE,
     marginTop: 24,
-    alignSelf: 'center'
-    // elevation: 15,
-    // shadowColor: AppColors.SHADOW,
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
+    alignSelf: "center",
   },
   searchIcon: {
     marginRight: 10,
@@ -162,13 +153,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderColor: AppColors.MAIN_COLOR,
     backgroundColor: AppColors.TEXT_WHITE,
-    // Sombra en Android
-    // elevation: 8,
-    // // Sombra en iOS
-    // shadowColor: AppColors.SHADOW,
-    // shadowOffset: { width: 0, height: 4 },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 4,
   },
   cardContent: {
     flexDirection: "row",
@@ -192,6 +176,5 @@ const styles = StyleSheet.create({
     color: AppColors.TEXT_WHITE,
     fontSize: 14,
     fontWeight: "bold",
-    // fontFamily: "InriaSerif_Bold"
   },
 });
