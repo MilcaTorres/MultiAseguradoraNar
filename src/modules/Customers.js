@@ -94,12 +94,20 @@ export default function Customers({ navigation }) {
                     <Text><Text style={styles.label}>Edad: </Text>{customer.edad} años</Text>
                     <Text><Text style={styles.label}>Correo: </Text>{customer.correo}</Text>
                   </View>
+                  <View>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate("CotizacionesClientes", { cliente: customer })}
+                  >
+                    <Text style={styles.textButton}>Ver Cotizaciones</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.button}
                     onPress={() => navigation.navigate("PolizasClientes", { cliente: customer })}
                   >
                     <Text style={styles.textButton}>Ver Pólizas</Text>
                   </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             ))
@@ -169,12 +177,14 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     backgroundColor: AppColors.MAIN_COLOR,
-    width: "40%",
+    width: "100%",
     alignItems: "center",
+    marginTop: 15
   },
   textButton: {
     color: AppColors.TEXT_WHITE,
     fontSize: 14,
     fontWeight: "bold",
-  },
+    textAlign: 'center'
+  }
 });

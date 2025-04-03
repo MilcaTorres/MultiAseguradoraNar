@@ -48,7 +48,7 @@ export default function HolderDataScreen({ navigation, route }) {
     try {
       const holderDataWithUserId = { ...holderData, userId };  // Incluir userId
   
-      const responseHolder = await fetch("http://192.168.1.73:3000/nar/clientes/", {
+      const responseHolder = await fetch("http://192.168.100.15:3000/nar/clientes/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(holderDataWithUserId),
@@ -60,7 +60,7 @@ export default function HolderDataScreen({ navigation, route }) {
       if (!isHolderInsured) {
         const insuredDataWithUserId = { ...insuredData, userId };  // Incluir userId en asegurado
   
-        const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
+        const responseInsured = await fetch("http://192.168.100.15:3000/nar/asegurados/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(insuredDataWithUserId),
