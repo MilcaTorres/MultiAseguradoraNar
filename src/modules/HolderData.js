@@ -84,14 +84,15 @@ export default function HolderDataScreen({ navigation, route }) {
           <View style={styles.welcome}>
             <Text style={styles.text}>Datos Titular </Text>
           </View>
-          {/* Campos del formulario */}
+          {/* Campos del formulario del titular */}
           <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "nombre", text)} />
           <TextInput placeholder="Apellido paterno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoPaterno", text)} />
           <TextInput placeholder="Apellido materno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoMaterno", text)} />
           <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "rfc", text)} />
           <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "telefono", text)} />
           <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "correo", text)} />
-          {/* Campo de fecha de nacimiento */}
+          
+          {/* Campo de fecha de nacimiento del titular */}
           <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
             <TextInput
               style={styles.input}
@@ -113,6 +114,7 @@ export default function HolderDataScreen({ navigation, route }) {
             confirmTextIOS="Listo"
             cancelTextIOS="Cancelar"
           />
+          
           {/* Pregunta sobre el asegurado */}
           <View style={styles.radioContainer}>
             <Text style={styles.label}>¿El titular también será el asegurado?</Text>
@@ -133,7 +135,6 @@ export default function HolderDataScreen({ navigation, route }) {
           </View>
 
           {/* Formulario del asegurado (si es diferente del titular) */}
-
           {!isHolderInsured && (
             <View style={styles.extraFormContainer}>
               <View style={styles.welcome}>
@@ -145,6 +146,8 @@ export default function HolderDataScreen({ navigation, route }) {
               <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "rfc", text)} />
               <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "telefono", text)} />
               <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "correo", text)} />
+              
+              {/* Campo de fecha de nacimiento del asegurado */}
               <TouchableOpacity onPress={() => setShowDatePickerInsured(true)}>
                 <TextInput
                   style={styles.input}
@@ -168,6 +171,7 @@ export default function HolderDataScreen({ navigation, route }) {
               />
             </View>
           )}
+          
           <TouchableOpacity style={styles.button} onPress={submitData}>
             <Text style={styles.buttonText}>Cotizar</Text>
           </TouchableOpacity>
@@ -176,7 +180,6 @@ export default function HolderDataScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },

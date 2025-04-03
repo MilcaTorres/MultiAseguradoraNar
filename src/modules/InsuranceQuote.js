@@ -1,66 +1,96 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-  Image,
-} from "react-native";
-import AppColors from "../kernel/AppColors";
-import CustomHeader from "../modules/CustomHeader";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import AppColors from "../kernel/AppColors"; // Asegúrate de tener los colores definidos
 
-export default function InsuranceQuote({ navigation }) {
+export default function InsuranceQuote() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { idCotizacion } = route.params;
+
+  const [emision, setEmisiones] = useState(null);
+  const API_URL = `http://192.168.1.73:3000/nar/cotizaciones/id/${idCotizacion}`; // URL de detalles de la cotización
+
+  useEffect(() => {
+    const fetchCotizacionDetails = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        if (data.success) {
+          setEmisiones(data.data); // Asumimos que 'data' contiene la cotización seleccionada
+        } else {
+          console.error("La respuesta de la API no contiene datos válidos:", data);
+        }
+      } catch (error) {
+        console.error("Error al obtener la cotización detallada", error);
+      }
+    };
+
+    fetchCotizacionDetails();
+  }, [idCotizacion]);
+
+  const handleEmitir = () => {
+    Alert.alert(
+      "¿Estás seguro de emitir la acción?",
+      "Una vez emitido, no podrás revertir esta acción.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sí, emitir",
+          onPress: async () => {
+            try {
+              const response = await fetch(`http://192.168.1.73:3000/nar/cotizaciones/emitida/${idCotizacion}`, {
+                method: 'PUT',
+              });
+              if (response.status === 200) {
+                Alert.alert("¡Emitido!", "La póliza ha sido emitida al correo del cliente.", [{ text: "OK" }]);
+              } else {
+                Alert.alert("Error", "Hubo un problema al emitir la póliza.", [{ text: "OK" }]);
+              }
+            } catch (error) {
+              console.error("Error al emitir la póliza:", error);
+              Alert.alert("Error", "Ocurrió un error inesperado.", [{ text: "OK" }]);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  if (!emision) {
+    return <Text style={styles.loadingText}>Cargando...</Text>;
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
-      <CustomHeader title="Cotizar" />
+      <Text style={styles.insuranceTitle}>{emision.nombreSeguro}</Text>
 
-      {/* Information Section */}
-      <View style={styles.infoSection}>
-        <View style={styles.welcome}>
-          <Text style={styles.text}>Información sobre el seguro: </Text>
-        </View>
-
-        <View style={styles.insuranceContainer}>
-          <Image
-            source={require("../../assets/img/life-insurance.png")}
-            style={styles.insuranceImage}
-          />
-          <Text style={styles.insuranceType}>Seguro de vida 1</Text>
-        </View>
+      {/* Información del asegurado */}
+      <View style={styles.infoCard}>
+        <Text style={styles.infoCardText}>Nombre: {emision.nombreAsegurado}</Text>
+        <Text style={styles.infoCardText}>Teléfono: {emision.telefonoAsegurado}</Text>
+        <Text style={styles.infoCardText}>Edad: {emision.edadAsegurado} años</Text>
+        <Text style={styles.infoCardText}>Correo: {emision.correoAsegurado}</Text>
       </View>
 
-      {/* Insured Person Details */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Datos del Asegurado</Text>
-        <Text>Nombre: Juan Pérez López</Text>
-        <Text>Edad: 35 años</Text>
-        <Text>Teléfono: +52 55 1234 5678</Text>
-        <Text>Correo: juan.perez@email.com</Text>
+      {/* Coberturas */}
+      <View style={styles.infoCard}>
+        <Text style={styles.infoCardText}>Coberturas:</Text>
+        <Text style={styles.infoCardText}>{emision.cobertura}</Text>
       </View>
 
-      {/* Coverages */}
-      <ScrollView contentContainerStyle={styles.coverages}>
-        <Text style={styles.coverageTitle}>Coberturas:</Text>
-        <Text>* Muerte Natural – Pago a beneficiarios.</Text>
-        <Text>* Muerte Accidental – Pago extra.</Text>
-        <Text>* Invalidez Total – Indemnización.</Text>
-        <Text>* Enfermedad Terminal – Adelanto del seguro.</Text>
-        <Text>* Gastos Funerarios – Cobertura de costos.</Text>
-        <Text>* Doble Indemnización – Pago doble si es accidental.</Text>
-      </ScrollView>
+      {/* Precio final */}
+      <View style={styles.infoCard}>
+        <Text style={styles.infoCardText}>Precio Final: ${emision.precioFinal}</Text>
+      </View>
 
-      {/* Buttons */}
+      {/* Botones */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.buttonText}>Volver</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonText}>Regresar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleEmitir}>
           <Text style={styles.buttonText}>Emitir</Text>
         </TouchableOpacity>
       </View>
@@ -70,62 +100,21 @@ export default function InsuranceQuote({ navigation }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
-  infoSection: { alignItems: "center", marginVertical: 10 },
   infoCard: {
-    backgroundColor: AppColors.MAIN_COLOR, // Fondo azul
+    backgroundColor: AppColors.MAIN_COLOR,
     padding: 12,
-    marginVertical: 10, // Espaciado superior e inferior
-    alignItems: "center", // Centrar el texto
-    justifyContent: "center",
-  },
-  infoCardText: {
-    color: "white", // Texto blanco
-    fontWeight: "bold",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  insuranceContainer: {
-    flexDirection: "row",
+    marginVertical: 10,
     alignItems: "center",
-    marginTop: 10,
   },
-  welcome: {
-      backgroundColor: AppColors.MAIN_COLOR,
-      width: "96%",
-      padding: 14,
-      borderRadius: 3,
-      alignItems: "center",
-      marginTop: 20,
-      marginBottom: 20,
-    },
-    text: {
-      color: AppColors.TEXT_WHITE,
-      fontSize: 20,
-      fontFamily: "InriaSerif_Bold",
-    },
-  insuranceType: { fontSize: 24, fontWeight: "bold", marginRight: 10 },
-  insuranceImage: { width: 80, height: 80, resizeMode: "contain" },
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    margin: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#ccc",
-  },
-  cardTitle: { fontWeight: "bold", marginBottom: 8 },
-  coverages: { padding: 16 },
-  coverageTitle: { fontWeight: "bold", marginBottom: 8 },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    padding: 16,
-  },
+  infoCardText: { color: "white", fontWeight: "bold", fontSize: 18, textAlign: "center" },
+  insuranceTitle: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  buttonContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 20 },
   button: {
     backgroundColor: AppColors.MAIN_COLOR,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 8,
   },
-  buttonText: { color: "white", fontWeight: "bold" },
+  buttonText: { color: "#fff", fontWeight: "bold" },
+  loadingText: { textAlign: "center", marginTop: 20, fontSize: 18 },
 });
