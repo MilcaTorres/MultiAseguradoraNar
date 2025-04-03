@@ -18,15 +18,15 @@ import CustomHeader from "./CustomHeader";
 export default function CustomersQuotes({ route, navigation }) {
   const { cliente } = route.params;
   const [search, setSearch] = useState("");
-  const [policies, setPolicies] = useState([]);
+  const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchPolicies = async () => {
+  const fetchQuotes = async () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://192.168.100.15:3000/nar/emisiones/cliente/${cliente._id}`,
+        `http://192.168.107.113:3000/nar/cotizaciones/pendientesByCliente/${cliente._id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -36,9 +36,9 @@ export default function CustomersQuotes({ route, navigation }) {
         throw new Error(`Error en la solicitud: ${response.statusText}`);
       }
       const data = await response.json();
-      setPolicies(data.data);
+      setQuotes(data.data);
     } catch (error) {
-      console.error("Error al obtener las pólizas: ", error);
+      console.error("Error al obtener las cotizaciones: ", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -47,21 +47,20 @@ export default function CustomersQuotes({ route, navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetchPolicies();
+      fetchQuotes();
     }, [cliente])
   );
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchPolicies();
+    fetchQuotes();
   };
 
-  const filteredPolicies = policies.filter((policy) => {
+  const filteredQuotes = quotes.filter((quote) => {
     const searchText = search.toLowerCase();
     return (
-      policy.numeroPoliza.toString().includes(searchText) ||
-      policy.nombreSeguro?.toLowerCase().includes(searchText) ||
-      policy.vigencia?.toLowerCase().includes(searchText)
+      quote.nombreAsegurado.toString().includes(searchText) ||
+      quote.nombreSeguro?.toLowerCase().includes(searchText)
     );
   });
 
@@ -70,7 +69,9 @@ export default function CustomersQuotes({ route, navigation }) {
       <CustomHeader title={`${cliente.nombre} ${cliente.apellidoPaterno}`} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <View style={styles.container}>
           <View style={styles.searchContainer}>
@@ -82,7 +83,7 @@ export default function CustomersQuotes({ route, navigation }) {
             />
             <TextInput
               style={styles.searchBar}
-              placeholder="Buscar póliza..."
+              placeholder="Buscar cotización..."
               placeholderTextColor={AppColors.TEXT_GRAY}
               value={search}
               onChangeText={setSearch}
@@ -91,24 +92,25 @@ export default function CustomersQuotes({ route, navigation }) {
 
           {loading ? (
             <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
-          ) : filteredPolicies.length > 0 ? (
-            filteredPolicies.map((policy, index) => (
+          ) : filteredQuotes.length > 0 ? (
+            filteredQuotes.map((quote, index) => (
               <View key={index} style={styles.card}>
                 <View style={styles.cardContent}>
                   <View style={styles.textContainer}>
-                    <Text style={styles.label}>Póliza No° {policy.numeroPoliza}</Text>
-                    <Text>{policy.nombreSeguro}</Text>
                     <Text>
-                      <Text style={styles.label}>Vigencia: </Text>
-                      {policy.vigencia}
+                      <Text style={styles.label}>Asegurado: </Text>
+                      {quote.nombreAsegurado}
                     </Text>
                     <Text>
-                      <Text style={styles.label}>Monto total: </Text>${policy.montoTotal}
+                      <Text style={styles.label}>Tipo de seguro: </Text>
+                      {quote.tipoSeguro}
                     </Text>
                   </View>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate("PolizasDetalles", { policy })}
+                    onPress={() =>
+                      navigation.navigate("CotizacionesDetalles", { quote })
+                    }
                   >
                     <Text style={styles.textButton}>Ver más</Text>
                   </TouchableOpacity>
@@ -116,7 +118,9 @@ export default function CustomersQuotes({ route, navigation }) {
               </View>
             ))
           ) : (
-            <Text style={styles.noDataText}>No hay pólizas registradas para este cliente</Text>
+            <Text style={styles.noDataText}>
+              No hay cotizaciones registradas para este cliente
+            </Text>
           )}
         </View>
       </ScrollView>
@@ -127,7 +131,12 @@ export default function CustomersQuotes({ route, navigation }) {
 const styles = StyleSheet.create({
   safeContainer: { flex: 1, backgroundColor: AppColors.BACKGROUND },
   scrollContainer: { flexGrow: 1 },
-  container: { flex: 1, alignItems: "center", justifyContent: "flex-start", backgroundColor: AppColors.BACKGROUND },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundColor: AppColors.BACKGROUND,
+  },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -152,10 +161,19 @@ const styles = StyleSheet.create({
     borderColor: AppColors.MAIN_COLOR,
     backgroundColor: AppColors.TEXT_WHITE,
   },
-  cardContent: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  cardContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   textContainer: { flex: 1 },
   label: { fontWeight: "bold" },
-  button: { padding: 10, backgroundColor: AppColors.MAIN_COLOR, width: "40%", alignItems: "center" },
+  button: {
+    padding: 10,
+    backgroundColor: AppColors.MAIN_COLOR,
+    width: "35%",
+    alignItems: "center",
+  },
   textButton: { color: AppColors.TEXT_WHITE, fontSize: 14, fontWeight: "bold" },
   noDataText: { marginTop: 20, fontSize: 16, color: AppColors.TEXT_GRAY },
 });

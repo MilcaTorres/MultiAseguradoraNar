@@ -7,7 +7,7 @@ import CustomHeader from "../modules/CustomHeader"; // Componente de encabezado 
 export default function InsuranceDetailsScreen() {
   const navigation = useNavigation();
   const [cotizaciones, setCotizaciones] = useState([]);
-  const API_URL = "http://192.168.1.73:3000/nar/cotizaciones"; // URL de las cotizaciones
+  const API_URL = "http://192.168.100.15:3000/nar/cotizaciones"; // URL de las cotizaciones
 
   // Obtener cotizaciones usando fetch
   useEffect(() => {

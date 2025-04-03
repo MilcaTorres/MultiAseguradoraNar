@@ -9,7 +9,7 @@ export default function InsuranceQuote() {
   const { idCotizacion } = route.params;
 
   const [emision, setEmisiones] = useState(null);
-  const API_URL = `http://192.168.1.73:3000/nar/cotizaciones/id/${idCotizacion}`; // URL de detalles de la cotización
+  const API_URL = `http://192.168.100.15:3000/nar/cotizaciones/id/${idCotizacion}`; // URL de detalles de la cotización
 
   useEffect(() => {
     const fetchCotizacionDetails = async () => {
@@ -40,7 +40,7 @@ export default function InsuranceQuote() {
           text: "Sí, emitir",
           onPress: async () => {
             try {
-              const response = await fetch(`http://192.168.1.73:3000/nar/cotizaciones/emitida/${idCotizacion}`, {
+              const response = await fetch(`http://192.168.100.15:3000/nar/cotizaciones/emitida/${idCotizacion}`, {
                 method: 'PUT',
               });
               if (response.status === 200) {

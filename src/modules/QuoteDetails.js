@@ -10,14 +10,14 @@ import AppColors from "../kernel/AppColors";
 import CustomHeader from "./CustomHeader";
 import { useEffect, useState } from "react";
 
-export default function PolicyDetails({ route, navigation }) {
-  const { policy } = route.params;
-  const [policyDetails, setPolicyDetails] = useState({});
+export default function QuoteDetails({ route, navigation }) {
+  const { quote } = route.params;
+  const [quoteDetails, setQuoteDetails] = useState({});
 
   useEffect(() => {
-    const fetchPolicyDetails = async () => {
+    const fetchQuoteDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.107.113:3000/nar/emisiones/id/${policy.idPoliza}`, {
+        const response = await fetch(`http://192.168.107.113:3000/nar/cotizaciones/id/${quote.idCotizacion}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -28,60 +28,56 @@ export default function PolicyDetails({ route, navigation }) {
           throw new Error(`Error en la solicitud: ${response.statusText}`);
         }
         const data = await response.json();
-        setPolicyDetails(data.data);
+        setQuoteDetails(data.data);
       } catch (error) {
-        console.error("Error al obtener la póliza:", error.message);
+        console.error("Error al obtener la cotización:", error.message);
       }
     };
   
-    fetchPolicyDetails();
-  }, [policy]);
+    fetchQuoteDetails();
+  }, [quote]);
   
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-      <CustomHeader title="Detalles de la Póliza" />
+      <CustomHeader title="Detalles de la Cotización" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <View style={styles.labelName}>
             <Text style={styles.textName}>
-              Póliza No° {policy.numeroPoliza}
+              {quoteDetails.nombreSeguro}
             </Text>
           </View>
           <View style={styles.card}>
             <View style={styles.cardContent}>
               <View style={styles.textContainer}>
                 <Text style={styles.text}>
-                  <Text style={styles.label}>Asegurado: </Text>
-                  {policyDetails.nombreAsegurado || "Cargando..."}
-                </Text>
-                <Text style={styles.text}>
-                  <Text style={styles.label}>RFC: </Text>
-                  {policyDetails.rfc || "Cargando..."}
-                </Text>
-                <Text style={styles.text}>
-                  <Text style={styles.label}>Teléfono: </Text>
-                  {policyDetails.telefono || "Cargando..."}
-                </Text>
-                <Text style={styles.text}>
-                  <Text style={styles.label}>Nombre del seguro: </Text>
-                  {policyDetails.nombreSeguro || "Cargando..."}
-                </Text>
-                <Text style={styles.text}>
                   <Text style={styles.label}>Tipo de seguro: </Text>
-                  {policyDetails.tipoSeguro || "Cargando..."}
+                  {quoteDetails.nombreSeguro || "Cargando..."}
+                </Text>
+                <Text style={styles.text}>
+                  <Text style={styles.label}>Asegurado: </Text>
+                  {quoteDetails.nombreAsegurado|| "Cargando..."}
+                </Text>
+                <Text style={styles.text}>
+                  <Text style={styles.label}>Teléfono del asegurado: </Text>
+                  {quoteDetails.telefonoAsegurado || "Cargando..."}
+                </Text>
+                <Text style={styles.text}>
+                  <Text style={styles.label}>Edad del asegurado: </Text>
+                  {quoteDetails.edadAsegurado || "Cargando..."}
+                </Text>
+                <Text style={styles.text}>
+                  <Text style={styles.label}>Correo del asegurado: </Text>
+                  {quoteDetails.correoAsegurado || "Cargando..."}
                 </Text>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Cobertura: </Text>
-                  {policyDetails.cobertura || "Cargando..."}
+                  {quoteDetails.cobertura || "Cargando..."}
                 </Text>
                 <Text style={styles.text}>
-                  <Text style={styles.label}>Vigencia: </Text>
-                  {policyDetails.vigencia || "Cargando..."}
-                </Text>
-                <Text style={styles.text}>
-                  <Text style={styles.label}>Monto total: </Text>$
-                  {policyDetails.montoTotal || "Cargando..."}
+                  <Text style={styles.label}>Precio final: </Text>$
+                  {quoteDetails.precioFinal || "Cargando..."}
                 </Text>
               </View>
             </View>
