@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppColors from '../kernel/AppColors';
 import CustomHeader from '../modules/CustomHeader';
 
 export default function QuoteScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("usuario");
+        if (userData) {
+          const user = JSON.parse(userData);
+          setUserId(user._id); // Se obtiene el _id pero no se envía en la petición
+        }
+      } catch (error) {
+        console.error("Error al obtener el ID del usuario", error);
+      }
+    };
+    fetchUserId();
+  }, []);
 
   const fetchSeguros = async (tipo) => {
     setLoading(true);
@@ -28,17 +45,17 @@ export default function QuoteScreen({ navigation }) {
         {loading && <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />}
         {error && <Text style={styles.errorText}>{error}</Text>}
         
-        <TouchableOpacity style={styles.card} onPress={() => fetchSeguros('viaje')}>
+        <TouchableOpacity style={styles.card} onPress={() => fetchSeguros('Viaje')}>
           <Image source={require("../../assets/img/seguro-de-viaje.png")} style={styles.icon} />
           <Text style={styles.cardText}>Seguro de viaje</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.card} onPress={() => fetchSeguros('medico')}>
+        <TouchableOpacity style={styles.card} onPress={() => fetchSeguros('Salud')}>
           <Image source={require("../../assets/img/gastos-medicos.png")} style={styles.icon} />
           <Text style={styles.cardText}>Seguro de gastos médicos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={() => fetchSeguros('vida')}>
+        <TouchableOpacity style={styles.card} onPress={() => fetchSeguros('Vida')}>
           <Image source={require("../../assets/img/seguro-de-vida.png")} style={styles.icon} />
           <Text style={styles.cardText}>Seguro de vida</Text>
         </TouchableOpacity>

@@ -13,14 +13,68 @@ import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
 
 export default function HolderDataScreen({ navigation, route }) {
-  const { tipo } = route.params; // Recibe el tipo de seguro seleccionado
+  const { tipo, userId } = route.params;  // Obtener userId
+
   const [isHolderInsured, setIsHolderInsured] = useState(true);
 
-  const [dateDisplayHolder, setDateDisplayHolder] = useState(new Date());
-  const [showDatePickerHolder, setShowDatePickerHolder] = useState(false);
+  const [holderData, setHolderData] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    rfc: "",
+    telefono: "",
+    correo: "",
+    fechaNacimiento: new Date(),
+  });
 
-  const [dateDisplayInsured, setDateDisplayInsured] = useState(new Date());
+  const [insuredData, setInsuredData] = useState({
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    rfc: "",
+    telefono: "",
+    correo: "",
+    fechaNacimiento: new Date(),
+  });
+
+  const [showDatePickerHolder, setShowDatePickerHolder] = useState(false);
   const [showDatePickerInsured, setShowDatePickerInsured] = useState(false);
+
+  const handleInputChange = (setState, field, value) => {
+    setState(prevState => ({ ...prevState, [field]: value }));
+  };
+
+  const submitData = async () => {
+    try {
+      const holderDataWithUserId = { ...holderData, userId };  // Incluir userId
+  
+      const responseHolder = await fetch("http://192.168.1.73:3000/nar/clientes/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(holderDataWithUserId),
+      });
+  
+      const resultHolder = await responseHolder.json();
+      console.log("Titular registrado:", resultHolder);
+  
+      if (!isHolderInsured) {
+        const insuredDataWithUserId = { ...insuredData, userId };  // Incluir userId en asegurado
+  
+        const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(insuredDataWithUserId),
+        });
+  
+        const resultInsured = await responseInsured.json();
+        console.log("Asegurado registrado:", resultInsured);
+      }
+  
+      navigation.navigate("Seguros", { tipo });
+    } catch (error) {
+      console.error("Error al enviar los datos:", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -30,56 +84,35 @@ export default function HolderDataScreen({ navigation, route }) {
           <View style={styles.welcome}>
             <Text style={styles.text}>Datos Titular </Text>
           </View>
-
           {/* Campos del formulario */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Nombre</Text>
-            <TextInput placeholder="Nombre" style={styles.input} />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Apellido paterno</Text>
-            <TextInput placeholder="Apellido paterno" style={styles.input} />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Apellido materno</Text>
-            <TextInput placeholder="Apellido materno" style={styles.input} />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Teléfono</Text>
-            <TextInput placeholder="Teléfono" style={styles.input} />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Correo electrónico</Text>
-            <TextInput placeholder="Correo electrónico" style={styles.input} />
-          </View>
-
+          <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "nombre", text)} />
+          <TextInput placeholder="Apellido paterno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoPaterno", text)} />
+          <TextInput placeholder="Apellido materno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoMaterno", text)} />
+          <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "rfc", text)} />
+          <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "telefono", text)} />
+          <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "correo", text)} />
           {/* Campo de fecha de nacimiento */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Fecha de Nacimiento</Text>
-            <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
-              <TextInput
-                style={styles.input}
-                value={dateDisplayHolder.toLocaleDateString("es-MX")}
-                editable={false}
-                placeholder="Selecciona una fecha"
-              />
-            </TouchableOpacity>
-          </View>
-
+          <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
+            <TextInput
+              style={styles.input}
+              value={holderData.fechaNacimiento.toLocaleDateString("es-MX")}
+              editable={false}
+              placeholder="Selecciona una fecha"
+            />
+          </TouchableOpacity>
           <DateTimePicker
             isVisible={showDatePickerHolder}
             mode="date"
             locale="es-MX"
-            date={dateDisplayHolder}
+            date={holderData.fechaNacimiento}
             onConfirm={(date) => {
-              setDateDisplayHolder(date);
+              handleInputChange(setHolderData, "fechaNacimiento", date);
               setShowDatePickerHolder(false);
             }}
             onCancel={() => setShowDatePickerHolder(false)}
             confirmTextIOS="Listo"
             cancelTextIOS="Cancelar"
           />
-
           {/* Pregunta sobre el asegurado */}
           <View style={styles.radioContainer}>
             <Text style={styles.label}>¿El titular también será el asegurado?</Text>
@@ -100,67 +133,42 @@ export default function HolderDataScreen({ navigation, route }) {
           </View>
 
           {/* Formulario del asegurado (si es diferente del titular) */}
+
           {!isHolderInsured && (
             <View style={styles.extraFormContainer}>
               <View style={styles.welcome}>
                 <Text style={styles.text}>Datos Asegurado</Text>
               </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Nombre</Text>
-                <TextInput placeholder="Nombre" style={styles.input} />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Apellido paterno</Text>
-                <TextInput placeholder="Apellido paterno" style={styles.input} />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Apellido materno</Text>
-                <TextInput placeholder="Apellido materno" style={styles.input} />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Teléfono</Text>
-                <TextInput placeholder="Teléfono" style={styles.input} />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Correo electrónico</Text>
-                <TextInput placeholder="Correo electrónico" style={styles.input} />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Fecha de Nacimiento</Text>
-                <TouchableOpacity onPress={() => setShowDatePickerInsured(true)}>
-                  <TextInput
-                    style={styles.input}
-                    value={dateDisplayInsured.toLocaleDateString("es-MX")}
-                    editable={false}
-                    placeholder="Selecciona una fecha"
-                  />
-                </TouchableOpacity>
-              </View>
-
+              <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "nombre", text)} />
+              <TextInput placeholder="Apellido paterno" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "apellidoPaterno", text)} />
+              <TextInput placeholder="Apellido materno" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "apellidoMaterno", text)} />
+              <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "rfc", text)} />
+              <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "telefono", text)} />
+              <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "correo", text)} />
+              <TouchableOpacity onPress={() => setShowDatePickerInsured(true)}>
+                <TextInput
+                  style={styles.input}
+                  value={insuredData.fechaNacimiento.toLocaleDateString("es-MX")}
+                  editable={false}
+                  placeholder="Selecciona una fecha"
+                />
+              </TouchableOpacity>
               <DateTimePicker
                 isVisible={showDatePickerInsured}
                 mode="date"
                 locale="es-MX"
-                date={dateDisplayInsured}
+                date={insuredData.fechaNacimiento}
                 onConfirm={(date) => {
-                  setDateDisplayInsured(date);
+                  handleInputChange(setInsuredData, "fechaNacimiento", date);
                   setShowDatePickerInsured(false);
                 }}
                 onCancel={() => setShowDatePickerInsured(false)}
                 confirmTextIOS="Listo"
                 cancelTextIOS="Cancelar"
               />
-
             </View>
-
-            
           )}
-
-          {/* Botón Cotizar */}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Seguros", { tipo })} // Pasa el tipo de seguro
-          >
+          <TouchableOpacity style={styles.button} onPress={submitData}>
             <Text style={styles.buttonText}>Cotizar</Text>
           </TouchableOpacity>
         </View>
@@ -168,6 +176,7 @@ export default function HolderDataScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
