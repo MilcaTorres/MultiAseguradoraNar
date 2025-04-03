@@ -6,32 +6,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Platform,
-  DatePickerIOS,
-  DateTimePickerAndroid,
   ScrollView,
 } from "react-native";
+import DateTimePicker from "react-native-modal-datetime-picker";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
 
 export default function HolderDataScreen({ navigation, route }) {
   const { tipo } = route.params; // Recibe el tipo de seguro seleccionado
   const [isHolderInsured, setIsHolderInsured] = useState(true);
-  const [dateOfBirth, setDateOfBirth] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const showDatePickerAndroid = () => {
-    DateTimePickerAndroid.open({
-      value: dateOfBirth,
-      onChange: (event, selectedDate) => {
-        setShowDatePicker(false);
-        if (selectedDate) {
-          setDateOfBirth(selectedDate);
-        }
-      },
-      mode: "date",
-    });
-  };
+  const [dateDisplayHolder, setDateDisplayHolder] = useState(new Date());
+  const [showDatePickerHolder, setShowDatePickerHolder] = useState(false);
+
+  const [dateDisplayInsured, setDateDisplayInsured] = useState(new Date());
+  const [showDatePickerInsured, setShowDatePickerInsured] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -63,6 +52,33 @@ export default function HolderDataScreen({ navigation, route }) {
             <Text style={styles.label}>Correo electrónico</Text>
             <TextInput placeholder="Correo electrónico" style={styles.input} />
           </View>
+
+          {/* Campo de fecha de nacimiento */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Fecha de Nacimiento</Text>
+            <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
+              <TextInput
+                style={styles.input}
+                value={dateDisplayHolder.toLocaleDateString("es-MX")}
+                editable={false}
+                placeholder="Selecciona una fecha"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <DateTimePicker
+            isVisible={showDatePickerHolder}
+            mode="date"
+            locale="es-MX"
+            date={dateDisplayHolder}
+            onConfirm={(date) => {
+              setDateDisplayHolder(date);
+              setShowDatePickerHolder(false);
+            }}
+            onCancel={() => setShowDatePickerHolder(false)}
+            confirmTextIOS="Listo"
+            cancelTextIOS="Cancelar"
+          />
 
           {/* Pregunta sobre el asegurado */}
           <View style={styles.radioContainer}>
@@ -109,7 +125,35 @@ export default function HolderDataScreen({ navigation, route }) {
                 <Text style={styles.label}>Correo electrónico</Text>
                 <TextInput placeholder="Correo electrónico" style={styles.input} />
               </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Fecha de Nacimiento</Text>
+                <TouchableOpacity onPress={() => setShowDatePickerInsured(true)}>
+                  <TextInput
+                    style={styles.input}
+                    value={dateDisplayInsured.toLocaleDateString("es-MX")}
+                    editable={false}
+                    placeholder="Selecciona una fecha"
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <DateTimePicker
+                isVisible={showDatePickerInsured}
+                mode="date"
+                locale="es-MX"
+                date={dateDisplayInsured}
+                onConfirm={(date) => {
+                  setDateDisplayInsured(date);
+                  setShowDatePickerInsured(false);
+                }}
+                onCancel={() => setShowDatePickerInsured(false)}
+                confirmTextIOS="Listo"
+                cancelTextIOS="Cancelar"
+              />
+
             </View>
+
+            
           )}
 
           {/* Botón Cotizar */}
