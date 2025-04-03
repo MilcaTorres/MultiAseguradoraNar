@@ -11,7 +11,7 @@ export default function QuoteScreen({ navigation }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:3000/nar/seguros/tipo/${tipo}`);
+      const response = await fetch(`http://192.168.100.15:3000/nar/seguros/tipo/${tipo}`);
       const data = await response.json();
       navigation.navigate('DatosTitular', { seguros: data, tipo });
     } catch (err) {

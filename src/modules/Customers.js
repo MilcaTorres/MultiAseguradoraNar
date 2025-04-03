@@ -24,7 +24,7 @@ export default function Customers({ navigation }) {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://192.168.111.194:3000/nar/clientes/", {
+      const response = await fetch("http://192.168.100.15:3000/nar/clientes/", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

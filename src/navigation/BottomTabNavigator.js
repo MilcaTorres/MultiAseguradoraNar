@@ -58,7 +58,12 @@ export default function BottomTabNavigator() {
           backgroundColor: AppColors.MAIN_COLOR,
           paddingBottom: 5,
           height: 60,
+          //position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0
         },
+        keyboardHidesTabBar: false,
       })}
     >
       <Tab.Screen
