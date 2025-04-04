@@ -8,7 +8,7 @@ export default function Insurance({ navigation, route }) {
   const [cotizaciones, setCotizaciones] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null); // Nuevo estado para manejar errores
-  const API_URL = "http://192.168.1.73:3000/nar/cotizaciones";
+  const API_URL = "http://192.168.100.15:3000/nar/cotizaciones";
 
   useEffect(() => {
     const fetchCotizaciones = async () => {

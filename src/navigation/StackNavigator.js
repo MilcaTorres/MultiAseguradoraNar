@@ -17,6 +17,7 @@ import HolderData from '../modules/HolderData';
 import Insurence from '../modules/Insurence';
 import InsuranceQuote from '../modules/InsuranceQuote';
 import CustomersQuotes from '../modules/CustomersQuotes';
+import QuoteDetails from '../modules/QuoteDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ export default function StackNavigator() {
       <Stack.Screen name='PolizasClientes' component={CustomersPolicies} options={{title: 'Clientes' }}/>
       <Stack.Screen name='PolizasDetalles' component={PolicyDetails} options={{title: 'Clientes' }}/>
       <Stack.Screen name='CotizacionesClientes' component={CustomersQuotes} options={{title: 'Clientes' }}/>
+      <Stack.Screen name='CotizacionesDetalles' component={QuoteDetails} options={{title: 'Clientes' }}/>
       <Stack.Screen name="Contra" component={ResetPassEmail} options={{headerShown: false}}/>
       <Stack.Screen name="Code" component={VerifyCode} options={{headerShown: false}}/>
       <Stack.Screen name="NewPass" component={NewPassword} options={{headerShown: false}}/>
