@@ -7,13 +7,24 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+
+// Después de que el usuario inicia sesión
+const storeUserId = async (userId) => {
+  try {
+    await AsyncStorage.setItem('@user_id', userId);
+  } catch (error) {
+    console.error("Error al guardar el ID de usuario", error);
+  }
+};
+
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Por favor, ingrese correo y contraseña");
       return
     }
     try {
-      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
+      const response = await fetch('http://192.168.1.73:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +40,9 @@ export default function Login({ navigation }) {
 
       if (response.ok) {
         await AsyncStorage.setItem("usuario", JSON.stringify(data));
+        
         navigation.navigate("Inicio");
+        
       } else {
         Alert.alert("Error", data.message || "Error en el login");
       }

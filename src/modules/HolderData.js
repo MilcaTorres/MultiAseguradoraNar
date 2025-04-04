@@ -1,22 +1,19 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
 
 export default function HolderDataScreen({ navigation, route }) {
-  const { tipo, userId } = route.params;  // Obtener userId
+  const { tipo, userId } = route.params || {};
+
+  useEffect(() => {
+    console.log("Params en HolderDataScreen:", route.params);
+    console.log("Tipo recibido:", tipo);
+    console.log("UserId recibido:", userId);
+  }, [route.params]);
 
   const [isHolderInsured, setIsHolderInsured] = useState(true);
-
   const [holderData, setHolderData] = useState({
     nombre: "",
     apellidoPaterno: "",
@@ -26,7 +23,6 @@ export default function HolderDataScreen({ navigation, route }) {
     correo: "",
     fechaNacimiento: new Date(),
   });
-
   const [insuredData, setInsuredData] = useState({
     nombre: "",
     apellidoPaterno: "",
@@ -36,7 +32,6 @@ export default function HolderDataScreen({ navigation, route }) {
     correo: "",
     fechaNacimiento: new Date(),
   });
-
   const [showDatePickerHolder, setShowDatePickerHolder] = useState(false);
   const [showDatePickerInsured, setShowDatePickerInsured] = useState(false);
 
@@ -44,35 +39,150 @@ export default function HolderDataScreen({ navigation, route }) {
     setState(prevState => ({ ...prevState, [field]: value }));
   };
 
+  const handleHolderInsuredChange = (value) => {
+    setIsHolderInsured(value);
+    if (value) {
+      setInsuredData(holderData);
+    } else {
+      setInsuredData({
+        nombre: "",
+        apellidoPaterno: "",
+        apellidoMaterno: "",
+        rfc: "",
+        telefono: "",
+        correo: "",
+        fechaNacimiento: new Date(),
+      });
+    }
+  };
+
+  const calculateAge = (birthdate) => {
+    const diff = Date.now() - new Date(birthdate).getTime();
+    const ageDate = new Date(diff);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  };
+
+  const validateData = (data) => {
+    const { nombre, apellidoPaterno, apellidoMaterno, fechaNacimiento, correo, rfc, telefono } = data;
+    if (!nombre || !apellidoPaterno || !apellidoMaterno || !fechaNacimiento || !correo || !rfc || !telefono) {
+      Alert.alert("Error", "Todos los campos son obligatorios.");
+      return false;
+    }
+    return true;
+  };
+
   const submitData = async () => {
+    if (!validateData(holderData)) return;
+
     try {
-      const holderDataWithUserId = { ...holderData, userId };  // Incluir userId
-  
-      const responseHolder = await fetch("http://192.168.100.15:3000/nar/clientes/", {
+      const holderDataWithUserId = {
+        ...holderData,
+        userId,
+        edad: calculateAge(holderData.fechaNacimiento),
+      };
+
+      const responseHolder = await fetch("http://192.168.1.73:3000/nar/clientes/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(holderDataWithUserId),
       });
-  
+
       const resultHolder = await responseHolder.json();
       console.log("Titular registrado:", resultHolder);
-  
+
+      if (!resultHolder || !resultHolder._id) {
+        throw new Error("No se obtuvo el id del titular al registrar.");
+      }
+
+      const idCliente = resultHolder._id;
+      let idAsegurado;
+
       if (!isHolderInsured) {
-        const insuredDataWithUserId = { ...insuredData, userId };  // Incluir userId en asegurado
-  
-        const responseInsured = await fetch("http://192.168.100.15:3000/nar/asegurados/", {
+        if (!validateData(insuredData)) return;
+
+        const insuredDataWithHolderId = {
+          ...insuredData,
+          userId: resultHolder._id,
+          edad: calculateAge(insuredData.fechaNacimiento),
+          idCliente: idCliente,
+        };
+
+        const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(insuredDataWithUserId),
+          body: JSON.stringify(insuredDataWithHolderId),
         });
-  
+
         const resultInsured = await responseInsured.json();
         console.log("Asegurado registrado:", resultInsured);
+
+        idAsegurado = resultInsured._id;
+      } else {
+        const insuredDataWithHolderId = {
+          ...holderData,
+          userId: resultHolder._id,
+          edad: calculateAge(holderData.fechaNacimiento),
+          idCliente: idCliente,
+        };
+
+        const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(insuredDataWithHolderId),
+        });
+
+        const resultInsured = await responseInsured.json();
+        console.log("Asegurado registrado:", resultInsured);
+
+        idAsegurado = resultInsured._id;
       }
-  
-      navigation.navigate("Seguros", { tipo });
+
+      const responseSeguros = await fetch(`http://192.168.1.73:3000/nar/seguros/tipo/${tipo}`);
+      const segurosResponse = await responseSeguros.json();
+      console.log("Seguro encontrado:", JSON.stringify(segurosResponse.data, null, 2));
+
+
+      if (!segurosResponse.success || !segurosResponse.data || segurosResponse.data.length === 0) {
+        Alert.alert("Error", "No se encontraron seguros para el tipo seleccionado.");
+        return;
+      }
+
+      console.log("Seguros disponibles:", segurosResponse.data);
+
+      const cotizaciones = segurosResponse.data.map(async (seguro) => {
+        const cotizacionData = {
+          idUsuario: userId,
+          idCliente: idCliente,
+          idAsegurado: idAsegurado,
+          idSeguro: seguro._id,
+        };
+
+        try {
+          const responseCotizacion = await fetch("http://192.168.1.73:3000/nar/cotizaciones/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cotizacionData),
+          });
+
+          if (!responseCotizacion.ok) {
+            throw new Error(`Error al crear cotización: ${responseCotizacion.statusText}`);
+          }
+
+          const resultCotizacion = await responseCotizacion.json();
+          console.log("Cotización generada:", resultCotizacion);
+        } catch (error) {
+          console.error("Error al generar la cotización:", error);
+          Alert.alert("Error", "Hubo un problema al generar la cotización.");
+        }
+      });
+
+      await Promise.all(cotizaciones);
+
+      navigation.navigate("Seguros", { tipo, userId });
+
     } catch (error) {
       console.error("Error al enviar los datos:", error);
+      Alert.alert("Error", "Hubo un problema al registrar los datos. Intenta nuevamente.");
     }
   };
 
@@ -84,15 +194,13 @@ export default function HolderDataScreen({ navigation, route }) {
           <View style={styles.welcome}>
             <Text style={styles.text}>Datos Titular </Text>
           </View>
-          {/* Campos del formulario del titular */}
           <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "nombre", text)} />
           <TextInput placeholder="Apellido paterno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoPaterno", text)} />
           <TextInput placeholder="Apellido materno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoMaterno", text)} />
           <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "rfc", text)} />
           <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "telefono", text)} />
           <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "correo", text)} />
-          
-          {/* Campo de fecha de nacimiento del titular */}
+
           <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
             <TextInput
               style={styles.input}
@@ -101,6 +209,7 @@ export default function HolderDataScreen({ navigation, route }) {
               placeholder="Selecciona una fecha"
             />
           </TouchableOpacity>
+
           <DateTimePicker
             isVisible={showDatePickerHolder}
             mode="date"
@@ -114,18 +223,17 @@ export default function HolderDataScreen({ navigation, route }) {
             confirmTextIOS="Listo"
             cancelTextIOS="Cancelar"
           />
-          
-          {/* Pregunta sobre el asegurado */}
+
           <View style={styles.radioContainer}>
             <Text style={styles.label}>¿El titular también será el asegurado?</Text>
             <View style={styles.radioGroup}>
-              <TouchableOpacity onPress={() => setIsHolderInsured(true)} style={styles.radioButton}>
+              <TouchableOpacity onPress={() => handleHolderInsuredChange(true)} style={styles.radioButton}>
                 <View style={[styles.outerCircle, isHolderInsured && styles.outerCircleSelected]}>
                   {isHolderInsured && <View style={styles.innerCircle} />}
                 </View>
                 <Text style={styles.radioText}>Sí</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setIsHolderInsured(false)} style={styles.radioButton}>
+              <TouchableOpacity onPress={() => handleHolderInsuredChange(false)} style={styles.radioButton}>
                 <View style={[styles.outerCircle, !isHolderInsured && styles.outerCircleSelected]}>
                   {!isHolderInsured && <View style={styles.innerCircle} />}
                 </View>
@@ -134,11 +242,10 @@ export default function HolderDataScreen({ navigation, route }) {
             </View>
           </View>
 
-          {/* Formulario del asegurado (si es diferente del titular) */}
           {!isHolderInsured && (
             <View style={styles.extraFormContainer}>
               <View style={styles.welcome}>
-                <Text style={styles.text}>Datos Asegurado</Text>
+                <Text style={styles.text}>Datos Titular </Text>
               </View>
               <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "nombre", text)} />
               <TextInput placeholder="Apellido paterno" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "apellidoPaterno", text)} />
@@ -146,8 +253,7 @@ export default function HolderDataScreen({ navigation, route }) {
               <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "rfc", text)} />
               <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "telefono", text)} />
               <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "correo", text)} />
-              
-              {/* Campo de fecha de nacimiento del asegurado */}
+
               <TouchableOpacity onPress={() => setShowDatePickerInsured(true)}>
                 <TextInput
                   style={styles.input}
@@ -156,6 +262,7 @@ export default function HolderDataScreen({ navigation, route }) {
                   placeholder="Selecciona una fecha"
                 />
               </TouchableOpacity>
+
               <DateTimePicker
                 isVisible={showDatePickerInsured}
                 mode="date"
@@ -171,7 +278,7 @@ export default function HolderDataScreen({ navigation, route }) {
               />
             </View>
           )}
-          
+
           <TouchableOpacity style={styles.button} onPress={submitData}>
             <Text style={styles.buttonText}>Cotizar</Text>
           </TouchableOpacity>
