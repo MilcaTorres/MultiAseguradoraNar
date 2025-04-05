@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function HomeScreen({ navigation }) {
   const[nombre, setNombre] = useState("");
   const[apellidoPaterno, setApellidoPaterno] = useState("");
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const obtenerUsuario = async () => {
@@ -20,7 +21,9 @@ export default function HomeScreen({ navigation }) {
           if (usuarioData) {
             setNombre(usuarioData.nombre);
             setApellidoPaterno(usuarioData.apellidoPaterno);
-            //console.log("Nombre del usuario obtenido:", usuarioData);
+            setUserId(usuarioData._id);  // Aquí extraemos el userId
+            console.log("ID del usuario obtenido:", usuarioData._id);
+            
           } else {
             console.log("Error: Estructura de datos inesperada", usuario);
           }
@@ -55,7 +58,7 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.buttonText}>Clientes</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('MainApp', { screen: 'Quote' })}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.replace('MainApp', { screen: 'Quote', params: { userId } })}>
               <Image source={require("../../assets/img/quote.png")} style={styles.imgButton}/>
               <Text style={styles.buttonText}>Cotizar</Text>
             </TouchableOpacity>

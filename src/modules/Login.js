@@ -7,6 +7,17 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+
+// Después de que el usuario inicia sesión
+const storeUserId = async (userId) => {
+  try {
+    await AsyncStorage.setItem('@user_id', userId);
+  } catch (error) {
+    console.error("Error al guardar el ID de usuario", error);
+  }
+};
+
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Por favor, ingrese correo y contraseña");
