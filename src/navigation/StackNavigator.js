@@ -19,6 +19,7 @@ import InsuranceQuote from '../modules/InsuranceQuote';
 import CustomersQuotes from '../modules/CustomersQuotes';
 import QuoteDetails from '../modules/QuoteDetails';
 import BlockedHome from '../modules/BlockedHome';
+import ProfileInactive from '../modules/ProfileInactive';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ export default function StackNavigator() {
       <Stack.Screen name="Cotizar" component={Quote} options={{headerShown: false}}/>
       <Stack.Screen name="Estadísticas" component={Statistics} options={{headerShown: false}}/>
       <Stack.Screen name="Perfil" component={Profile} options={{headerShown: false}}/>
+      <Stack.Screen name="PerfilInactivo" component={ProfileInactive} options={{headerShown: false}}/>
       <Stack.Screen name='MainApp' component={BottomTabNavigator} options={{headerShown: false}}/>
       <Stack.Screen name='PolizasClientes' component={CustomersPolicies} options={{title: 'Clientes' }}/>
       <Stack.Screen name='PolizasDetalles' component={PolicyDetails} options={{title: 'Clientes' }}/>

@@ -10,7 +10,7 @@ import {
 import AppColors from "../kernel/AppColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function BlockedHome() {
+export default function BlockedHome({navigation}) {
   const [nombre, setNombre] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
 
@@ -90,9 +90,9 @@ export default function BlockedHome() {
               <Text style={styles.buttonText}>Estadísticas</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.Profilebutton} onPress={() => navigation.navigate('PerfilInactivo')}>
               <Image
-                source={require("../../assets/img/profile-blocked.png")}
+                source={require("../../assets/img/profile.png")}
                 style={styles.imgButton}
               />
               <Text style={styles.buttonText}>Perfil</Text>
@@ -155,6 +155,17 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: AppColors.BORDER_GRAY,
+    width: 160,
+    height: 140,
+    padding: 14,
+    borderRadius: 20,
+    marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 10,
+  },
+  Profilebutton: {
+    backgroundColor: AppColors.MAIN_COLOR,
     width: 160,
     height: 140,
     padding: 14,
