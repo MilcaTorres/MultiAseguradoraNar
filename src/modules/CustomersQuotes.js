@@ -26,7 +26,7 @@ export default function CustomersQuotes({ route, navigation }) {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://192.168.107.113:3000/nar/cotizaciones/pendientesByCliente/${cliente._id}`,
+        `http://192.168.100.15:3000/nar/cotizaciones/pendientesByCliente/${cliente._id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     marginTop: 20,
-    borderColor: AppColors.MAIN_COLOR,
+    borderColor: AppColors.BORDER_GRAY,
     backgroundColor: AppColors.TEXT_WHITE,
   },
   cardContent: {

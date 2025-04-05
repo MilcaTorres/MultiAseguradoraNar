@@ -13,7 +13,7 @@ export default function Login({ navigation }) {
       return
     }
     try {
-      const response = await fetch('http://192.168.107.113:3000/nar/usuarios/login/agente', {
+      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +29,15 @@ export default function Login({ navigation }) {
 
       if (response.ok) {
         await AsyncStorage.setItem("usuario", JSON.stringify(data));
-        navigation.navigate("Inicio");
+
+        const estado = data?.data?._doc.estado;
+        if(estado === "activo"){
+          navigation.navigate("Inicio");
+        } else if (estado === "inactivo"){
+          navigation.navigate("InicioBloqueado");
+        } else {
+          Alert.alert("Error", "Estado del agente desconocido")
+        }
       } else {
         Alert.alert("Error", data.message || "Error en el login");
       }
