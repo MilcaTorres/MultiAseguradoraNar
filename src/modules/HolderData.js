@@ -8,7 +8,7 @@ export default function HolderDataScreen({ navigation, route }) {
   const { tipo, userId } = route.params || {};
 
   useEffect(() => {
-    console.log("Params en HolderDataScreen:", route.params);
+    //console.log("Params en HolderDataScreen:", route.params);
     console.log("Tipo recibido:", tipo);
     console.log("UserId recibido:", userId);
   }, [route.params]);
@@ -73,118 +73,129 @@ export default function HolderDataScreen({ navigation, route }) {
 
   const submitData = async () => {
     if (!validateData(holderData)) return;
-
+  
     try {
       const holderDataWithUserId = {
         ...holderData,
         userId,
         edad: calculateAge(holderData.fechaNacimiento),
       };
-
+  
+      // Registrar al titular como cliente
       const responseHolder = await fetch("http://192.168.1.73:3000/nar/clientes/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(holderDataWithUserId),
       });
-
+  
       const resultHolder = await responseHolder.json();
       console.log("Titular registrado:", resultHolder);
-
+  
       if (!resultHolder || !resultHolder._id) {
         throw new Error("No se obtuvo el id del titular al registrar.");
       }
-
+  
       const idCliente = resultHolder._id;
       let idAsegurado;
-
-      if (!isHolderInsured) {
+  
+      if (isHolderInsured) {
+        // ✅ Registrar explícitamente al titular también como asegurado
+        const insuredHolderData = {
+          ...holderDataWithUserId,
+          idCliente, // Relacionado con el mismo cliente
+        };
+  
+        const responseInsuredHolder = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(insuredHolderData),
+        });
+  
+        const resultInsuredHolder = await responseInsuredHolder.json();
+        console.log("Titular registrado también como asegurado:", resultInsuredHolder);
+  
+        if (!resultInsuredHolder || !resultInsuredHolder._id) {
+          throw new Error("No se obtuvo el id del asegurado al registrar.");
+        }
+  
+        idAsegurado = resultInsuredHolder._id;
+      } else {
         if (!validateData(insuredData)) return;
-
+  
         const insuredDataWithHolderId = {
           ...insuredData,
           userId: resultHolder._id,
           edad: calculateAge(insuredData.fechaNacimiento),
           idCliente: idCliente,
         };
-
+  
         const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(insuredDataWithHolderId),
         });
-
+  
         const resultInsured = await responseInsured.json();
         console.log("Asegurado registrado:", resultInsured);
-
-        idAsegurado = resultInsured._id;
-      } else {
-        const insuredDataWithHolderId = {
-          ...holderData,
-          userId: resultHolder._id,
-          edad: calculateAge(holderData.fechaNacimiento),
-          idCliente: idCliente,
-        };
-
-        const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(insuredDataWithHolderId),
-        });
-
-        const resultInsured = await responseInsured.json();
-        console.log("Asegurado registrado:", resultInsured);
-
+  
+        if (!resultInsured || !resultInsured._id) {
+          throw new Error("No se obtuvo el id del asegurado al registrar.");
+        }
+  
         idAsegurado = resultInsured._id;
       }
-
+  
+      // Consultar seguros disponibles
       const responseSeguros = await fetch(`http://192.168.1.73:3000/nar/seguros/tipo/${tipo}`);
       const segurosResponse = await responseSeguros.json();
-      console.log("Seguro encontrado:", JSON.stringify(segurosResponse.data, null, 2));
-
-
+  
       if (!segurosResponse.success || !segurosResponse.data || segurosResponse.data.length === 0) {
         Alert.alert("Error", "No se encontraron seguros para el tipo seleccionado.");
         return;
       }
-
+  
       console.log("Seguros disponibles:", segurosResponse.data);
-
+  
+      // Crear cotizaciones
       const cotizaciones = segurosResponse.data.map(async (seguro) => {
         const cotizacionData = {
           idUsuario: userId,
-          idCliente: idCliente,
-          idAsegurado: idAsegurado,
-          idSeguro: seguro._id,
+          idCliente,
+          idAsegurado, // ✅ Ahora el ID está garantizado
+          idSeguro: seguro.idSeguro,
         };
-
+  
         try {
           const responseCotizacion = await fetch("http://192.168.1.73:3000/nar/cotizaciones/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(cotizacionData),
           });
-
+  
+          const responseText = await responseCotizacion.text();
+  
           if (!responseCotizacion.ok) {
-            throw new Error(`Error al crear cotización: ${responseCotizacion.statusText}`);
+            throw new Error(`Error ${responseCotizacion.status}: ${responseText}`);
           }
-
-          const resultCotizacion = await responseCotizacion.json();
+  
+          const resultCotizacion = JSON.parse(responseText);
           console.log("Cotización generada:", resultCotizacion);
         } catch (error) {
           console.error("Error al generar la cotización:", error);
-          Alert.alert("Error", "Hubo un problema al generar la cotización.");
+          Alert.alert("Error", `Hubo un problema al generar la cotización: ${error.message}`);
         }
       });
-
+  
       await Promise.all(cotizaciones);
-
-      navigation.navigate("Seguros", { tipo, userId });
-
+  
+      navigation.navigate("Seguros", { tipo, userId, idAsegurado });
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       Alert.alert("Error", "Hubo un problema al registrar los datos. Intenta nuevamente.");
     }
   };
+  
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>

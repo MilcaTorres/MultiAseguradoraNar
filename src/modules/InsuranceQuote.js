@@ -10,7 +10,7 @@ export default function InsuranceQuote({ navigation }) {
 
   const [emision, setEmisiones] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const API_URL = `http://192.168.100.15:3000/nar/cotizaciones/id/${idCotizacion}`;
+  const API_URL = `http://192.168.1.73:3000/nar/cotizaciones/id/${idCotizacion}`;
 
   useEffect(() => {
     const fetchCotizacionDetails = async () => {
@@ -51,17 +51,20 @@ export default function InsuranceQuote({ navigation }) {
           onPress: async () => {
             try {
               setIsLoading(true);
-              const response = await fetch(`http://192.168.100.15:3000/nar/cotizaciones/emitida/${idCotizacion}`, {
+              const response = await fetch(`http://192.168.1.73:3000/nar/cotizaciones/emitida/${idCotizacion}`, {
                 method: 'PUT',
               });
-
-              if (response.status === 200) {
+  
+              const responseText = await response.text();
+              const responseData = JSON.parse(responseText);  // Aquí agregamos la comprobación
+  
+              if (responseData.success) {
                 Alert.alert(
                   "¡Emitido!",
                   "La póliza ha sido emitida al correo del cliente.",
                   [{
                     text: "OK",
-                    onPress: () => navigation.navigate("Seguros")
+                    onPress: () => navigation.navigate("Cotizar") //Duda a donde lo re direcciona
                   }]
                 );
               } else {
@@ -78,7 +81,7 @@ export default function InsuranceQuote({ navigation }) {
       ]
     );
   };
-
+  
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>

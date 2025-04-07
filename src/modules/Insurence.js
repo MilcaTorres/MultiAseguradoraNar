@@ -1,68 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image, ActivityIndicator } from "react-native";
+import { useRoute } from "@react-navigation/native"; // Para recibir parámetros de navegación
 import CustomHeader from "../modules/CustomHeader";
 import AppColors from "../kernel/AppColors";
 
-export default function Insurance({ navigation, route }) {
-  const { tipo = "", id = "", idCotizacion = "" } = route?.params || {};
+
+export default function Insurance({ navigation }) {
+  const route = useRoute(); // Obtener parámetros de navegación
+  const { idAsegurado } = route.params || {}; // Obtener el idAsegurado dinámico
+
   const [cotizaciones, setCotizaciones] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null); // Nuevo estado para manejar errores
-  const API_URL = "http://192.168.100.15:3000/nar/cotizaciones";
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!idAsegurado) {
+      setError("No se encontró el ID del asegurado");
+      setIsLoading(false);
+      return;
+    }
+
     const fetchCotizaciones = async () => {
       try {
         setIsLoading(true);
-        setError(null); // Limpiar cualquier error previo
+        setError(null);
+        
+        const API_URL = `http://192.168.1.73:3000/nar/cotizaciones/asegurado/${idAsegurado}`;
+        console.log("Consultando API:", API_URL); // Verifica que la URL es correcta
 
-        // Estructura del objeto de datos
-        const holderDataWithUserId = {
-          idCotizacion: idCotizacion,
-          tipo: tipo,
-          id: id,
-        };
+        const response = await fetch(API_URL);
 
-        // Construir la URL con parámetros de consulta (query string)
-        let endpoint = API_URL;
-        const queryParams = new URLSearchParams();
-
-        // Agregar los parámetros al query string
-        if (holderDataWithUserId.idCotizacion) queryParams.append('idCotizacion', holderDataWithUserId.idCotizacion);
-        if (holderDataWithUserId.tipo) queryParams.append('tipo', holderDataWithUserId.tipo);
-        if (holderDataWithUserId.id) queryParams.append('id', holderDataWithUserId.id);
-
-        if (queryParams.toString()) {
-          endpoint = `${API_URL}?${queryParams.toString()}`;
-        }
-
-        // Usar fetch para realizar una solicitud GET con los parámetros en la URL
-        const response = await fetch(endpoint);
-
-        if (!response.ok) { // Verifica si la respuesta no fue exitosa
-          throw new Error('No se pudo obtener las cotizaciones');
+        if (!response.ok) { 
+          const errorText = await response.text();
+          throw new Error(`Error ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
+        console.log("Respuesta de la API:", data); // Imprimir datos para depuración
 
-        if (data.success && data.data) {
-          setCotizaciones(idCotizacion ? [data.data] : data.data);
-        } else {
-          console.error("La respuesta de la API no contiene datos válidos:", data);
-          setCotizaciones([]); // No hay cotizaciones
-        }
+        setCotizaciones(Array.isArray(data) ? data : []);
       } catch (error) {
-        console.error("Error al obtener las cotizaciones", error);
-        setError(error.message); // Guardar el mensaje de error
-        setCotizaciones([]); // No hay cotizaciones disponibles
+        console.error("Error al obtener las cotizaciones:", error);
+        setError(error.message);
+        setCotizaciones([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchCotizaciones();
-  }, [idCotizacion, tipo, id]);
-
+  }, [idAsegurado]); // Se ejecuta cuando cambia el `idAsegurado`
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -115,7 +102,7 @@ export default function Insurance({ navigation, route }) {
             <View style={styles.insuranceContainer}>
               <Image source={require("../../assets/img/life-insurance.png")} style={styles.insuranceImage} />
               <View style={styles.textContainer}>
-                <Text style={styles.insuranceTitle}>{cotizacion.nombreSeguro || `Seguro de ${tipo || "Vida"}`}</Text>
+                <Text style={styles.insuranceTitle}>{cotizacion.nombreSeguro || `Seguro de Vida`}</Text>
                 <Text style={styles.priceText}>Monto de la prima: ${cotizacion.precioFinal ?? "1,000"}</Text>
               </View>
             </View>
@@ -202,4 +189,3 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
-

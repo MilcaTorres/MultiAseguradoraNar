@@ -2,12 +2,39 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import AppColors from '../kernel/AppColors';
 import CustomHeader from '../modules/CustomHeader';
+import { useEffect } from 'react';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 export default function QuoteScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const userId = route?.params?.userId || null;
+  const [error, setError] = useState(null); 
+  
 
+    const [userId, setUserId] = useState(null);
+  
+    useEffect(() => {
+      const obtenerUserId = async () => {
+        try {
+          const id = await AsyncStorage.getItem("userId");
+          if (id) {
+            setUserId(id);
+            console.log("🚀 ID del usuario recuperado en QuoteScreen:", id);
+          } else {
+            console.warn("⚠️ No se encontró userId en AsyncStorage.");
+          }
+        } catch (error) {
+          console.error("❌ Error al recuperar userId:", error);
+        }
+      };
+      obtenerUserId();
+    }, []);
+  
+    console.log("Milk dice id del usuario en QuoteScreen:", userId);
+
+  
   const fetchSeguros = async (tipo) => {
     setLoading(true);
     setError(null);
