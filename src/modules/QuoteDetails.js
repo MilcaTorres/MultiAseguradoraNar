@@ -17,7 +17,7 @@ export default function QuoteDetails({ route, navigation }) {
   useEffect(() => {
     const fetchQuoteDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.107.113:3000/nar/cotizaciones/id/${quote.idCotizacion}`, {
+        const response = await fetch(`http://192.168.100.15:3000/nar/cotizaciones/id/${quote.idCotizacion}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export default function QuoteDetails({ route, navigation }) {
               <View style={styles.textContainer}>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Tipo de seguro: </Text>
-                  {quoteDetails.nombreSeguro || "Cargando..."}
+                  {quoteDetails.tipoSeguro || "Cargando..."}
                 </Text>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Asegurado: </Text>
@@ -87,7 +87,7 @@ export default function QuoteDetails({ route, navigation }) {
             style={styles.button}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.textButton}>Regresar</Text>
+            <Text style={styles.textButton}>Emitir</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
