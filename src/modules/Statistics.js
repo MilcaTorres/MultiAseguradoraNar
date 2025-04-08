@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,9 @@ import {
   Dimensions,
   SafeAreaView,
   ScrollView,
+  RefreshControl,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BarChart } from "react-native-chart-kit";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "./CustomHeader";
@@ -33,31 +35,54 @@ export default function Statistics() {
     new Array(12).fill(0)
   );
   const [emisionesPorMes, setEmisionesPorMes] = useState(new Array(12).fill(0));
-  const [cuotasACumplir, setCuotasACumplir] = useState(4);
+  const [cuotasACumplir, setCuotasACumplir] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setRefreshing(true);
+      const storedUser = await AsyncStorage.getItem("usuario");
+      const parsedUser = JSON.parse(storedUser);
+      const id = parsedUser?.data?._doc?._id;
+
+      if (!id) throw new Error("No se encontró ID del usuario");
+
+      // Obtener cotizaciones y emisiones
+      const response = await fetch(
+        `http://192.168.100.15:3000/nar/usuarios/cotizacionesYEmisiones/${id}`
+      );
+      const result = await response.json();
+
+      const currentMonth = new Date().getMonth();
+
+      const cotizaciones = new Array(12).fill(0);
+      cotizaciones[currentMonth] = Number(result.cotizaciones);
+      const emisiones = new Array(12).fill(0);
+      emisiones[currentMonth] = Number(result.emisiones);
+
+      setCotizacionesPorMes(cotizaciones);
+      setEmisionesPorMes(emisiones);
+
+      // Obtener cuota mensual
+      const cuotaResponse = await fetch(
+        "http://192.168.100.15:3000/nar/cuotas/"
+      );
+      const cuotaResult = await cuotaResponse.json();
+      if (Array.isArray(cuotaResult) && cuotaResult[0]?.cuotaMensual) {
+        setCuotasACumplir(cuotaResult[0].cuotaMensual);
+      }
+    } catch (error) {
+      console.error("Error al obtener estadísticas: ", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const id = "67e645d14d0391f2e051db0f";
-        const response = await fetch(
-          `http://192.168.100.15:3000/nar/usuarios/cotizacionesYEmisiones/${id}`
-        );
-        const result = await response.json();
+    fetchData();
+  }, []);
 
-        const currentMonth = new Date().getMonth();
-
-        const cotizaciones = new Array(12).fill(0);
-        cotizaciones[currentMonth] = Number(result.cotizaciones);
-
-        const emisiones = new Array(12).fill(0);
-        emisiones[currentMonth] = Number(result.emisiones);
-
-        setCotizacionesPorMes(cotizaciones);
-        setEmisionesPorMes(emisiones);
-      } catch (error) {
-        console.error("Error al obtener estadísticas: ", error);
-      }
-    };
+  const onRefresh = useCallback(() => {
     fetchData();
   }, []);
 
@@ -70,27 +95,17 @@ export default function Statistics() {
     style: {
       borderRadius: 16,
     },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#0B1956",
-    },
-  };
-
-  const cotizacionesData = {
-    labels: meses,
-    datasets: [{ data: cotizacionesPorMes }],
-  };
-
-  const emisionesData = {
-    labels: meses,
-    datasets: [{ data: emisionesPorMes }],
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <CustomHeader title="Estadísticas" />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.container}>
           <View style={styles.cuotasContainer}>
             <Text style={styles.cuotasText}>
@@ -103,7 +118,10 @@ export default function Statistics() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ minWidth: screenWidth * 1.8 }}>
                 <BarChart
-                  data={cotizacionesData}
+                  data={{
+                    labels: meses,
+                    datasets: [{ data: cotizacionesPorMes }],
+                  }}
                   width={screenWidth * 1.8}
                   height={220}
                   chartConfig={chartConfig}
@@ -119,7 +137,10 @@ export default function Statistics() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ minWidth: screenWidth * 1.8 }}>
                 <BarChart
-                  data={emisionesData}
+                  data={{
+                    labels: meses,
+                    datasets: [{ data: emisionesPorMes }],
+                  }}
                   width={screenWidth * 1.8}
                   height={220}
                   chartConfig={chartConfig}
@@ -159,7 +180,7 @@ const styles = StyleSheet.create({
     color: AppColors.TEXT_WHITE,
     fontSize: 16,
     fontWeight: "bold",
-    textAlign: 'center'
+    textAlign: "center",
   },
   chartContainer: {
     width: "100%",
@@ -179,4 +200,3 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
 });
-
