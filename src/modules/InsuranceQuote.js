@@ -10,7 +10,7 @@ export default function InsuranceQuote({ navigation }) {
 
   const [emision, setEmisiones] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const API_URL = `http://192.168.100.15:3000/nar/cotizaciones/id/${idCotizacion}`;
+  const API_URL = `http://192.168.106.15:3001/nar/cotizaciones/id/${idCotizacion}`;
 
   useEffect(() => {
     const fetchCotizacionDetails = async () => {
@@ -51,7 +51,7 @@ export default function InsuranceQuote({ navigation }) {
           onPress: async () => {
             try {
               setIsLoading(true);
-              const response = await fetch(`http://192.168.100.15:3000/nar/cotizaciones/emitida/${idCotizacion}`, {
+              const response = await fetch(`http://192.168.106.15:3001/nar/cotizaciones/emitida/${idCotizacion}`, {
                 method: 'PUT',
               });
   

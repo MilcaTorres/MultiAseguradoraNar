@@ -26,7 +26,7 @@ export default function CustomersQuotes({ route, navigation }) {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://192.168.100.15:3000/nar/cotizaciones/pendientesByCliente/${cliente._id}`,
+        `http://192.168.106.15:3001/nar/cotizaciones/pendientesByCliente/${cliente._id}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

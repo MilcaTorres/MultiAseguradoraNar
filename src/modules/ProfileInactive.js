@@ -13,8 +13,10 @@ import CustomHeader from "./CustomHeader";
 import AppColors from "../kernel/AppColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommonActions } from "@react-navigation/native";
+import { ActivityIndicator } from "react-native";
 
-export default function ProfileInactive({ navigation }) {
+export default function Profile({ navigation }) {
+  const [isLoading, setIsLoading] = useState(false);
   // Estado para almacenar los datos del usuario
   const [userData, setUserData] = useState({
     nombre: "",
@@ -36,13 +38,13 @@ export default function ProfileInactive({ navigation }) {
       try {
         const usuarioJSON = await AsyncStorage.getItem("usuario");
         //console.log("Datos obtenidos de AsyncStorage: ", usuarioJSON);
-        
+
         if (usuarioJSON) {
           const usuario = JSON.parse(usuarioJSON);
-        
+
           if (usuario.data && usuario.data._doc) {
             const datosUsuario = usuario.data._doc;
-        
+
             setUserData((prevState) => ({
               ...prevState,
               nombre: datosUsuario.nombre || "",
@@ -56,7 +58,6 @@ export default function ProfileInactive({ navigation }) {
             console.log("Estructura de usuario inesperada:", usuario);
           }
         }
-        
       } catch (error) {
         console.log("Error al obtener los datos del usuario:", error);
       }
@@ -65,32 +66,73 @@ export default function ProfileInactive({ navigation }) {
   }, []);
 
   // Función para manejar la actualización de la contraseña
-  const handleSave = () => {
+  const handleSave = async () => {
     if (passwordUpdated) {
       Alert.alert("Aviso", "La contraseña ya fue actualizada.");
       return;
     }
 
-    if (!userData.nuevaContrasena || !userData.confirmarContrasena) {
-      Alert.alert("Error", "Los campos de contraseña no pueden estar vacíos.");
+    const { contrasenaActual, nuevaContrasena, confirmarContrasena } = userData;
+
+    if (!contrasenaActual || !nuevaContrasena || !confirmarContrasena) {
+      Alert.alert("Error", "Todos los campos de contraseña son obligatorios.");
       return;
     }
 
-    if (userData.nuevaContrasena !== userData.confirmarContrasena) {
-      Alert.alert("Error", "Las contraseñas no coinciden.");
+    if (nuevaContrasena !== confirmarContrasena) {
+      Alert.alert("Error", "Las nuevas contraseñas no coinciden.");
       return;
     }
 
-    // Simulación de petición al backend para actualizar la contraseña
-    setTimeout(() => {
-      Alert.alert("Éxito", "Contraseña actualizada correctamente.");
-      setUserData({
-        ...userData,
-        nuevaContrasena: "",
-        confirmarContrasena: "",
-      });
-      setPasswordUpdated(true);
-    }, 1000);
+    try {
+      setIsLoading(true);
+
+      const usuarioJSON = await AsyncStorage.getItem("usuario");
+      const usuario = JSON.parse(usuarioJSON);
+      const userId = usuario?.data?._doc._id;
+
+      if (!userId) {
+        Alert.alert("Error", "No se pudo obtener el ID del usuario.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://192.168.106.15:3001/nar/usuarios/updPostulante/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contrasenaActual,
+            nuevaContrasena,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Éxito", "Contraseña actualizada correctamente.");
+        setUserData({
+          ...userData,
+          contrasenaActual: "",
+          nuevaContrasena: "",
+          confirmarContrasena: "",
+        });
+        setPasswordUpdated(true);
+      } else {
+        Alert.alert(
+          "Error",
+          result.message || "No se pudo actualizar la contraseña."
+        );
+      }
+    } catch (error) {
+      console.error("Error al actualizar contraseña: ", error);
+      Alert.alert("Error", "Ocurrió un error inesperado.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Función para cerrar sesión y limpiar AsyncStorage
@@ -113,12 +155,20 @@ export default function ProfileInactive({ navigation }) {
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
               <Text>Nombre*</Text>
-              <TextInput style={styles.input} value={userData.nombre} editable={false} />
+              <TextInput
+                style={styles.input}
+                value={userData.nombre}
+                editable={false}
+              />
             </View>
 
             <View style={styles.inputContainer}>
               <Text>Apellido paterno*</Text>
-              <TextInput style={styles.input} value={userData.apellidoPaterno} editable={false} />
+              <TextInput
+                style={styles.input}
+                value={userData.apellidoPaterno}
+                editable={false}
+              />
             </View>
           </View>
 
@@ -126,12 +176,20 @@ export default function ProfileInactive({ navigation }) {
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
               <Text>Apellido materno*</Text>
-              <TextInput style={styles.input} value={userData.apellidoMaterno} editable={false} />
+              <TextInput
+                style={styles.input}
+                value={userData.apellidoMaterno}
+                editable={false}
+              />
             </View>
 
             <View style={styles.inputContainer}>
               <Text>RFC*</Text>
-              <TextInput style={styles.input} value={userData.rfc} editable={false} />
+              <TextInput
+                style={styles.input}
+                value={userData.rfc}
+                editable={false}
+              />
             </View>
           </View>
 
@@ -139,7 +197,11 @@ export default function ProfileInactive({ navigation }) {
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
               <Text>Correo electrónico*</Text>
-              <TextInput style={styles.input} value={userData.email} editable={false} />
+              <TextInput
+                style={styles.input}
+                value={userData.email}
+                editable={false}
+              />
             </View>
           </View>
 
@@ -147,7 +209,26 @@ export default function ProfileInactive({ navigation }) {
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
               <Text>Teléfono*</Text>
-              <TextInput style={styles.input} value={userData.telefono} editable={false} />
+              <TextInput
+                style={styles.input}
+                value={userData.telefono}
+                editable={false}
+              />
+            </View>
+          </View>
+
+          {/* Contraseña Actual */}
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>Contraseña actual:</Text>
+              <TextInput
+                style={[styles.input, styles.editableInput]}
+                secureTextEntry={true}
+                value={userData.contrasenaActual}
+                onChangeText={(text) =>
+                  setUserData({ ...userData, contrasenaActual: text })
+                }
+              />
             </View>
           </View>
 
@@ -159,7 +240,9 @@ export default function ProfileInactive({ navigation }) {
                 style={[styles.input, styles.editableInput]}
                 secureTextEntry={true}
                 value={userData.nuevaContrasena}
-                onChangeText={(text) => setUserData({ ...userData, nuevaContrasena: text })}
+                onChangeText={(text) =>
+                  setUserData({ ...userData, nuevaContrasena: text })
+                }
               />
             </View>
           </View>
@@ -172,14 +255,24 @@ export default function ProfileInactive({ navigation }) {
                 style={[styles.input, styles.editableInput]}
                 secureTextEntry={true}
                 value={userData.confirmarContrasena}
-                onChangeText={(text) => setUserData({ ...userData, confirmarContrasena: text })}
+                onChangeText={(text) =>
+                  setUserData({ ...userData, confirmarContrasena: text })
+                }
               />
             </View>
           </View>
 
           {/* Botón Guardar */}
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>Guardar</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSave}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Guardar</Text>
+            )}
           </TouchableOpacity>
 
           {/* Botón Cerrar Sesión */}
@@ -195,11 +288,33 @@ export default function ProfileInactive({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  inputRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
+  inputRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
   inputContainer: { flex: 1, marginHorizontal: 5 },
-  input: { borderWidth: 1, borderColor: "#aaa", padding: 8, borderRadius: 5, backgroundColor: "#eee" },
+  input: {
+    borderWidth: 1,
+    borderColor: "#aaa",
+    padding: 8,
+    borderRadius: 5,
+    backgroundColor: "#eee",
+  },
   editableInput: { backgroundColor: "#fff" },
-  button: { backgroundColor: "#002366", padding: 12, borderRadius: 8, alignItems: "center", marginTop: 10 },
-  logoutButton: { backgroundColor: "#DA1E28", padding: 12, borderRadius: 8, alignItems: "center", marginTop: 10 },
+  button: {
+    backgroundColor: "#002366",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  logoutButton: {
+    backgroundColor: "#DA1E28",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 });

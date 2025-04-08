@@ -17,7 +17,7 @@ export default function PolicyDetails({ route, navigation }) {
   useEffect(() => {
     const fetchPolicyDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.100.15:3000/nar/emisiones/id/${policy.idPoliza}`, {
+        const response = await fetch(`http://192.168.106.15:3001/nar/emisiones/id/${policy.idPoliza}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

@@ -97,7 +97,7 @@ export default function Profile({ navigation }) {
         return;
       }
 
-      const response = await fetch(`http://192.168.100.15:3000/nar/usuarios/updPostulante/${userId}`, {
+      const response = await fetch(`http://192.168.106.15:3001/nar/usuarios/updPostulante/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
