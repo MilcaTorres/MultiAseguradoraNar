@@ -13,7 +13,7 @@ export default function Login({ navigation }) {
       return
     }
     try {
-      const response = await fetch('http://192.168.1.73:3000/nar/usuarios/login/agente', {
+      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
