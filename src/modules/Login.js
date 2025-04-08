@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
-import AppColors from "../kernel/AppColors";
 import {
   Alert,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppColors from "../kernel/AppColors";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -23,19 +28,12 @@ export default function Login({ navigation }) {
         const estado = userData?.data?._doc?.estado;
 
         if (estado === "activo") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Inicio" }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "Inicio" }] });
         } else if (estado === "inactivo") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "InicioBloqueado" }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "InicioBloqueado" }] });
         }
       }
     };
-
     checkUserSession();
   }, []);
 
@@ -46,36 +44,21 @@ export default function Login({ navigation }) {
     }
 
     try {
-      const response = await fetch(
-        "http://192.168.106.15:3001/nar/usuarios/login/agente",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            correo: email,
-            contrasena: password,
-          }),
-        }
-      );
+      const response = await fetch("http://192.168.106.15:3001/nar/usuarios/login/agente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: email, contrasena: password }),
+      });
 
       const data = await response.json();
 
       if (response.ok) {
         await AsyncStorage.setItem("usuario", JSON.stringify(data));
-
         const estado = data?.data?._doc.estado;
         if (estado === "activo") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Inicio" }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "Inicio" }] });
         } else if (estado === "inactivo") {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "InicioBloqueado" }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: "InicioBloqueado" }] });
         }
       } else {
         Alert.alert("Error", data.message || "Error en el login");
@@ -86,37 +69,48 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../../assets/img/logo-blanco.png")}
-        style={styles.logo}
-      />
-      <Text style={styles.title}>Inicio de Sesión</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Image
+            source={require("../../assets/img/logo-blanco.png")}
+            style={styles.logo}
+          />
+          <Text style={styles.title}>Inicio de Sesión</Text>
 
-      <Text style={styles.label}>Correo electrónico*</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
+          <Text style={styles.label}>Correo electrónico*</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+          />
 
-      <Text style={styles.label}>Contraseña*</Text>
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+          <Text style={styles.label}>Contraseña*</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-      <TouchableOpacity onPress={handleLogin}>
-        <Text style={styles.buttonText}>Iniciar sesión</Text>
-      </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogin}>
+            <Text style={styles.buttonText}>Iniciar sesión</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Contra")}>
-        <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
-      </TouchableOpacity>
-    </View>
+          <TouchableOpacity onPress={() => navigation.navigate("Contra")}>
+            <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
