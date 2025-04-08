@@ -10,9 +10,10 @@ import {
 import AppColors from "../kernel/AppColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function BlockedHome({navigation}) {
+export default function BlockedHome({ navigation }) {
   const [nombre, setNombre] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
+  const [reactivacionSolicitada, setReactivacionSolicitada] = useState(false);
 
   useEffect(() => {
     const obtenerUsuario = async () => {
@@ -20,14 +21,15 @@ export default function BlockedHome({navigation}) {
         const usuarioJSON = await AsyncStorage.getItem("usuario");
         if (usuarioJSON) {
           const usuario = JSON.parse(usuarioJSON);
-
-          // Extraer los datos correctos dentro de `data._doc`
           const usuarioData = usuario.data?._doc;
 
           if (usuarioData) {
             setNombre(usuarioData.nombre);
             setApellidoPaterno(usuarioData.apellidoPaterno);
             //console.log("Nombre del usuario obtenido:", usuarioData);
+            setReactivacionSolicitada(
+              usuarioData.reactivacionSolicitada === "activa"
+            );
           } else {
             console.log("Error: Estructura de datos inesperada", usuario);
           }
@@ -38,6 +40,43 @@ export default function BlockedHome({navigation}) {
     };
     obtenerUsuario();
   }, []);
+
+  const solicitarReactivacion = async () => {
+    try {
+      const usuarioJSON = await AsyncStorage.getItem("usuario");
+      const usuario = JSON.parse(usuarioJSON);
+      const id = usuario?.data?._doc?._id;
+
+      if (!id) {
+        console.log("ID de usuario no encontrado.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://192.168.100.15:3000/nar/usuarios/reactivacionesActive/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Reactivación solicitada: ", data);
+        alert("Solicitud de reactivación enviada con éxito");
+        setReactivacionSolicitada(true);
+      } else {
+        console.error("Error en la solicitud: ", data.message);
+        alert("No se pudo solicitar la reactivación");
+      }
+    } catch (error) {
+      console.error("Error al solicitar reactivación: ", error);
+      alert("Hubo un error al enviar la solicitud");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -90,7 +129,10 @@ export default function BlockedHome({navigation}) {
               <Text style={styles.buttonText}>Estadísticas</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.Profilebutton} onPress={() => navigation.navigate('PerfilInactivo')}>
+            <TouchableOpacity
+              style={styles.Profilebutton}
+              onPress={() => navigation.navigate("PerfilInactivo")}
+            >
               <Image
                 source={require("../../assets/img/profile.png")}
                 style={styles.imgButton}
@@ -99,8 +141,21 @@ export default function BlockedHome({navigation}) {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity style={styles.Reactivatingbutton}>
-          <Text style={styles.buttonText}>Solicitar reactivación</Text>
+        <TouchableOpacity
+          style={[
+            styles.Reactivatingbutton,
+            reactivacionSolicitada && {
+              backgroundColor: AppColors.BUTTON_GRAY,
+            },
+          ]}
+          onPress={solicitarReactivacion}
+          disabled={reactivacionSolicitada}
+        >
+          <Text style={styles.buttonText}>
+            {reactivacionSolicitada
+              ? "Solicitud enviada"
+              : "Solicitar reactivación"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -144,7 +199,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   buttonsContainer: {
-    alignItems: "center"
+    alignItems: "center",
   },
   row: {
     flexDirection: "row",
