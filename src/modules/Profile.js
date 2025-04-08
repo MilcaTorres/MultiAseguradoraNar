@@ -13,8 +13,10 @@ import CustomHeader from "./CustomHeader";
 import AppColors from "../kernel/AppColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommonActions } from "@react-navigation/native";
+import { ActivityIndicator } from "react-native";
 
 export default function Profile({ navigation }) {
+  const [isLoading, setIsLoading] = useState(false);
   // Estado para almacenar los datos del usuario
   const [userData, setUserData] = useState({
     nombre: "",
@@ -65,32 +67,67 @@ export default function Profile({ navigation }) {
   }, []);
 
   // Función para manejar la actualización de la contraseña
-  const handleSave = () => {
+  const handleSave = async () => {
     if (passwordUpdated) {
       Alert.alert("Aviso", "La contraseña ya fue actualizada.");
       return;
     }
 
-    if (!userData.nuevaContrasena || !userData.confirmarContrasena) {
-      Alert.alert("Error", "Los campos de contraseña no pueden estar vacíos.");
+    const {contrasenaActual, nuevaContrasena, confirmarContrasena} = userData;
+
+    if(!contrasenaActual || !nuevaContrasena || !confirmarContrasena){
+      Alert.alert("Error", "Todos los campos de contraseña son obligatorios.");
       return;
     }
 
-    if (userData.nuevaContrasena !== userData.confirmarContrasena) {
-      Alert.alert("Error", "Las contraseñas no coinciden.");
+    if(nuevaContrasena !== confirmarContrasena){
+      Alert.alert("Error", "Las nuevas contraseñas no coinciden.");
       return;
     }
 
-    // Simulación de petición al backend para actualizar la contraseña
-    setTimeout(() => {
-      Alert.alert("Éxito", "Contraseña actualizada correctamente.");
-      setUserData({
-        ...userData,
-        nuevaContrasena: "",
-        confirmarContrasena: "",
+    try{
+      setIsLoading(true);
+
+      const usuarioJSON = await AsyncStorage.getItem("usuario");
+      const usuario = JSON.parse(usuarioJSON);
+      const userId = usuario?.data?._doc._id;
+
+      if(!userId){
+        Alert.alert("Error", "No se pudo obtener el ID del usuario.");
+        return;
+      }
+
+      const response = await fetch(`http://192.168.100.15:3000/nar/usuarios/updPostulante/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contrasenaActual,
+          nuevaContrasena,
+        }),
       });
-      setPasswordUpdated(true);
-    }, 1000);
+
+      const result = await response.json();
+
+      if(response.ok){
+        Alert.alert("Éxito", "Contraseña actualizada correctamente.");
+        setUserData({
+          ...userData,
+          contrasenaActual: "",
+          nuevaContrasena: "",
+          confirmarContrasena: "",
+        });
+        setPasswordUpdated(true);
+      } else {
+        Alert.alert("Error", result.message || "No se pudo actualizar la contraseña.");
+      }
+    } catch (error) {
+      console.error("Error al actualizar contraseña: ", error);
+      Alert.alert("Error", "Ocurrió un error inesperado.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Función para cerrar sesión y limpiar AsyncStorage
@@ -151,6 +188,19 @@ export default function Profile({ navigation }) {
             </View>
           </View>
 
+          {/* Contraseña Actual */}
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <Text>Contraseña actual:</Text>
+              <TextInput
+                style={[styles.input, styles.editableInput]}
+                secureTextEntry={true}
+                value={userData.contrasenaActual}
+                onChangeText={(text) => setUserData({ ...userData, contrasenaActual: text })}
+              />
+            </View>
+          </View>
+
           {/* Nueva Contraseña */}
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
@@ -178,8 +228,12 @@ export default function Profile({ navigation }) {
           </View>
 
           {/* Botón Guardar */}
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>Guardar</Text>
+          <TouchableOpacity style={styles.button} onPress={handleSave} disabled={isLoading}>
+            {isLoading ? (
+              <ActivityIndicator color="#fff"/>
+            ): (
+              <Text style={styles.buttonText}>Guardar</Text>
+            )}
           </TouchableOpacity>
 
           {/* Botón Cerrar Sesión */}
