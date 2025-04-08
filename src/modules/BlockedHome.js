@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import AppColors from "../kernel/AppColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
