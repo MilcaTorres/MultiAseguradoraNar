@@ -56,10 +56,13 @@ export default function Customers({ navigation }) {
 
   const filteredCustomers = customers.filter((customer) => {
     const searchText = search.toLowerCase();
+    const fullName = `${customer.nombre ?? ""} ${customer.apellidoPaterno ?? ""}`.toLowerCase();
+    const rfc = customer.rfc?.toLowerCase() ?? "";
+    const correo = customer.correo?.toLowerCase() ?? "";
     return (
-      (customer.nombre?.toLowerCase().includes(searchText) ?? false) ||
-      (customer.rfc?.toLowerCase().includes(searchText) ?? false) ||
-      (customer.correo?.toLowerCase().includes(searchText) ?? false)
+      fullName.includes(searchText) ||
+      rfc.includes(searchText) ||
+      correo.includes(searchText)
     );
   });
 

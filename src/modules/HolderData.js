@@ -82,7 +82,7 @@ export default function HolderDataScreen({ navigation, route }) {
       };
   
       // Registrar al titular como cliente
-      const responseHolder = await fetch("http://192.168.1.73:3000/nar/clientes/", {
+      const responseHolder = await fetch("http://192.168.100.15:3000/nar/clientes/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(holderDataWithUserId),
@@ -105,7 +105,7 @@ export default function HolderDataScreen({ navigation, route }) {
           idCliente, // Relacionado con el mismo cliente
         };
   
-        const responseInsuredHolder = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
+        const responseInsuredHolder = await fetch("http://192.168.100.15:3000/nar/asegurados/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(insuredHolderData),
@@ -129,7 +129,7 @@ export default function HolderDataScreen({ navigation, route }) {
           idCliente: idCliente,
         };
   
-        const responseInsured = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
+        const responseInsured = await fetch("http://192.168.100.15:3000/nar/asegurados/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(insuredDataWithHolderId),
@@ -146,7 +146,7 @@ export default function HolderDataScreen({ navigation, route }) {
       }
   
       // Consultar seguros disponibles
-      const responseSeguros = await fetch(`http://192.168.1.73:3000/nar/seguros/tipo/${tipo}`);
+      const responseSeguros = await fetch(`http://192.168.100.15:3000/nar/seguros/tipo/${tipo}`);
       const segurosResponse = await responseSeguros.json();
   
       if (!segurosResponse.success || !segurosResponse.data || segurosResponse.data.length === 0) {
@@ -166,7 +166,7 @@ export default function HolderDataScreen({ navigation, route }) {
         };
   
         try {
-          const responseCotizacion = await fetch("http://192.168.1.73:3000/nar/cotizaciones/", {
+          const responseCotizacion = await fetch("http://192.168.100.15:3000/nar/cotizaciones/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(cotizacionData),

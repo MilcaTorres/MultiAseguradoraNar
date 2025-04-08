@@ -47,7 +47,7 @@ export default function CustomersQuotes({ route, navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetchQuotes();
+      fetchQuotes(); 
     }, [cliente])
   );
 
@@ -59,7 +59,7 @@ export default function CustomersQuotes({ route, navigation }) {
   const filteredQuotes = quotes.filter((quote) => {
     const searchText = search.toLowerCase();
     return (
-      quote.nombreAsegurado.toString().includes(searchText) ||
+      quote.nombreAsegurado.toLowerCase().includes(searchText) ||
       quote.nombreSeguro?.toLowerCase().includes(searchText)
     );
   });
