@@ -66,15 +66,15 @@ export default function BlockedHome({ navigation }) {
       const data = await response.json();
       if (response.ok) {
         console.log("Reactivación solicitada: ", data);
-        alert("Solicitud de reactivación enviada con éxito");
+        Alert.alert("Aviso", "Solicitud de reactivación enviada con éxito.");
         setReactivacionSolicitada(true);
       } else {
         console.error("Error en la solicitud: ", data.message);
-        alert("No se pudo solicitar la reactivación");
+        Alert.alert("Error", "No se pudo solicitar la reactivación.");
       }
     } catch (error) {
       console.error("Error al solicitar reactivación: ", error);
-      alert("Hubo un error al enviar la solicitud");
+      Alert.alert("Error", "Hubo un error al enviar la solicitud.");
     }
   };
 
