@@ -1,42 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppColors from "../kernel/AppColors";
-import {Alert,Image,StyleSheet,Text,TextInput,TouchableOpacity,View,} from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    const checkUserSession = async () => {
+      const storedUser = await AsyncStorage.getItem("usuario");
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        const estado = userData?.data?._doc?.estado;
+
+        if (estado === "activo") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Inicio" }],
+          });
+        } else if (estado === "inactivo") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "InicioBloqueado" }],
+          });
+        }
+      }
+    };
+
+    checkUserSession();
+  }, []);
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Por favor, ingrese correo y contraseña");
-      return
+      return;
     }
+
     try {
-      const response = await fetch('http://192.168.100.15:3000/nar/usuarios/login/agente', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          correo: email,
-          contrasena: password,
-        }),
-      });
+      const response = await fetch(
+        "http://192.168.100.15:3000/nar/usuarios/login/agente",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            correo: email,
+            contrasena: password,
+          }),
+        }
+      );
 
       const data = await response.json();
-      //console.log("Respuesta del servidor: ", data);
 
       if (response.ok) {
         await AsyncStorage.setItem("usuario", JSON.stringify(data));
 
         const estado = data?.data?._doc.estado;
-        if(estado === "activo"){
-          navigation.navigate("Inicio");
-        } else if (estado === "inactivo"){
-          navigation.navigate("InicioBloqueado");
-        } else {
-          Alert.alert("Error", "Estado del agente desconocido")
+        if (estado === "activo") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Inicio" }],
+          });
+        } else if (estado === "inactivo") {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "InicioBloqueado" }],
+          });
         }
       } else {
         Alert.alert("Error", data.message || "Error en el login");
