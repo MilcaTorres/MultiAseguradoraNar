@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert, Platform } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
+import { getDateWithCero, getMonthAsText } from "./DateFormatter";
 
-const getDateWithCero = (day) => (day < 10 ? `0${day}` : day);
-const getMonthAsText = (month) => ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"][month];
 
 export default function HolderDataScreen({ navigation, route }) {
-
   const { tipo, userId } = route.params || {};
 
+  const [showDatePickerHolder, setShowDatePickerHolder] = useState(false);
+  const [showDatePickerInsured, setShowDatePickerInsured] = useState(false);
+
+
+
+
   useEffect(() => {
-    //console.log("Params en HolderDataScreen:", route.params);
     console.log("Tipo recibido:", tipo);
     console.log("UserId recibido:", userId);
   }, [route.params]);
@@ -36,11 +39,15 @@ export default function HolderDataScreen({ navigation, route }) {
     correo: "",
     fechaNacimiento: new Date(),
   });
-  const [showDatePickerHolder, setShowDatePickerHolder] = useState(false);
-  const [showDatePickerInsured, setShowDatePickerInsured] = useState(false);
 
-  const handleInputChange = (setState, field, value) => {
+   // Función para manejar cambios en los campos de entrada
+   const handleInputChange = (setState, field, value) => {
     setState(prevState => ({ ...prevState, [field]: value }));
+  };
+
+  // Función para manejar la confirmación de la fecha
+  const handleDateChange = (setState, field, date) => {
+    setState(prevState => ({ ...prevState, [field]: date }));
   };
 
   const handleHolderInsuredChange = (value) => {
@@ -85,8 +92,7 @@ export default function HolderDataScreen({ navigation, route }) {
         edad: calculateAge(holderData.fechaNacimiento),
       };
 
-      // Registrar al titular como cliente
-      const responseHolder = await fetch("http://192.168.100.15:3000/nar/clientes/", {
+      const responseHolder = await fetch("http://192.168.1.73:3000/nar/clientes/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(holderDataWithUserId),
@@ -103,10 +109,9 @@ export default function HolderDataScreen({ navigation, route }) {
       let idAsegurado;
 
       if (isHolderInsured) {
-        // ✅ Registrar explícitamente al titular también como asegurado
         const insuredHolderData = {
           ...holderDataWithUserId,
-          idCliente, // Relacionado con el mismo cliente
+          idCliente,
         };
 
         const responseInsuredHolder = await fetch("http://192.168.1.73:3000/nar/asegurados/", {
@@ -149,8 +154,7 @@ export default function HolderDataScreen({ navigation, route }) {
         idAsegurado = resultInsured._id;
       }
 
-      // Consultar seguros disponibles
-      const responseSeguros = await fetch(`http://192.168.100.15:3000/nar/seguros/tipo/${tipo}`);
+      const responseSeguros = await fetch(`http://192.168.1.73:3000/nar/seguros/tipo/${tipo}`);
       const segurosResponse = await responseSeguros.json();
 
       if (!segurosResponse.success || !segurosResponse.data || segurosResponse.data.length === 0) {
@@ -160,17 +164,16 @@ export default function HolderDataScreen({ navigation, route }) {
 
       console.log("Seguros disponibles:", segurosResponse.data);
 
-      // Crear cotizaciones
       const cotizaciones = segurosResponse.data.map(async (seguro) => {
         const cotizacionData = {
           idUsuario: userId,
           idCliente,
-          idAsegurado, // ✅ Ahora el ID está garantizado
+          idAsegurado,
           idSeguro: seguro.idSeguro,
         };
 
         try {
-          const responseCotizacion = await fetch("http://192.168.100.15:3000/nar/cotizaciones/", {
+          const responseCotizacion = await fetch("http://192.168.1.73:3000/nar/cotizaciones/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(cotizacionData),
@@ -198,12 +201,6 @@ export default function HolderDataScreen({ navigation, route }) {
       Alert.alert("Error", "Hubo un problema al registrar los datos. Intenta nuevamente.");
     }
   };
-  /*
-  const formatDate = (date) => {
-    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
-  };
-*/
-
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -220,8 +217,8 @@ export default function HolderDataScreen({ navigation, route }) {
           <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "telefono", text)} />
           <TextInput placeholder="Correo electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "correo", text)} />
 
-          {/* Fecha de nacimiento Titular */}
-          <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
+           {/* Fecha de nacimiento Titular */}
+           <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
             <TextInput
               style={styles.input}
               value={`${getDateWithCero(holderData.fechaNacimiento.getDate())}/${getMonthAsText(holderData.fechaNacimiento.getMonth())}/${holderData.fechaNacimiento.getFullYear()}`}
@@ -231,19 +228,18 @@ export default function HolderDataScreen({ navigation, route }) {
           </TouchableOpacity>
 
           <DateTimePicker
-            isVisible={showDatePickerHolder}
             mode="date"
             locale="es-MX"
             date={holderData.fechaNacimiento}
+            isVisible={showDatePickerHolder}
             onConfirm={(date) => {
-              handleInputChange(setHolderData, "fechaNacimiento", date);
+              handleDateChange(setHolderData, "fechaNacimiento", date);
               setShowDatePickerHolder(false);
             }}
             onCancel={() => setShowDatePickerHolder(false)}
             confirmTextIOS="Listo"
             cancelTextIOS="Cancelar"
           />
-
 
           <View style={styles.radioContainer}>
             <Text style={styles.label}>¿El titular también será el asegurado?</Text>
@@ -286,12 +282,12 @@ export default function HolderDataScreen({ navigation, route }) {
               </TouchableOpacity>
 
               <DateTimePicker
-                isVisible={showDatePickerInsured}
                 mode="date"
                 locale="es-MX"
                 date={insuredData.fechaNacimiento}
+                isVisible={showDatePickerInsured}
                 onConfirm={(date) => {
-                  handleInputChange(setInsuredData, "fechaNacimiento", date);
+                  handleDateChange(setInsuredData, "fechaNacimiento", date);
                   setShowDatePickerInsured(false);
                 }}
                 onCancel={() => setShowDatePickerInsured(false)}
