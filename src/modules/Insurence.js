@@ -25,7 +25,7 @@ export default function Insurance({ navigation }) {
         setIsLoading(true);
         setError(null);
         
-        const API_URL = `http://192.168.1.73:3000/nar/cotizaciones/asegurado/${idAsegurado}`;
+        const API_URL = `http://192.168.106.15:3001/nar/cotizaciones/asegurado/${idAsegurado}`;
         console.log("Consultando API:", API_URL); // Verifica que la URL es correcta
 
         const response = await fetch(API_URL);

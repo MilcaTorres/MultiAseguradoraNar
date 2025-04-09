@@ -17,7 +17,7 @@ export default function QuoteDetails({ route, navigation }) {
   useEffect(() => {
     const fetchQuoteDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.100.15:3000/nar/cotizaciones/id/${quote.idCotizacion}`, {
+        const response = await fetch(`http://192.168.106.15:3001/nar/cotizaciones/id/${quote.idCotizacion}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
