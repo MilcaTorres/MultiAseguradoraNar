@@ -5,6 +5,8 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "./CustomHeader";
@@ -13,17 +15,18 @@ import { useEffect, useState } from "react";
 export default function QuoteDetails({ route, navigation }) {
   const { quote } = route.params;
   const [quoteDetails, setQuoteDetails] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuoteDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.106.15:3001/nar/cotizaciones/id/${quote.idCotizacion}`, {
+        const response = await fetch(`http://192.168.1.73:3001/nar/cotizaciones/id/${quote.idCotizacion}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (!response.ok) {
           throw new Error(`Error en la solicitud: ${response.statusText}`);
         }
@@ -31,12 +34,72 @@ export default function QuoteDetails({ route, navigation }) {
         setQuoteDetails(data.data);
       } catch (error) {
         console.error("Error al obtener la cotización:", error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
-  
+
     fetchQuoteDetails();
   }, [quote]);
+
+  const handleEmitir = () => {
+    Alert.alert(
+      "¿Estás seguro de emitir la acción?",
+      "Una vez emitido, no podrás revertir esta acción.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sí, emitir",
+          onPress: async () => {
+            try {
+              setIsLoading(true);
+              const response = await fetch(`http://192.168.1.73:3001/nar/cotizaciones/emitida/${quote.idCotizacion}`, {
+                method: 'PUT',
+              });
   
+              // Obtener el texto de la respuesta
+              const responseText = await response.text();
+              console.log("Response Text:", responseText);
+  
+              // Analizar la respuesta como JSON
+              const responseData = JSON.parse(responseText);
+  
+              if (responseData.success) {
+                Alert.alert(
+                  "¡Emitido!",
+                  "La póliza ha sido emitida al correo del cliente.",
+                  [{
+                    text: "OK",
+                    onPress: () => navigation.navigate("Cotizar") // Asegúrate de que "Cotizar" sea una pantalla válida en tu navegación
+                  }]
+                );
+              } else {
+                Alert.alert("Error", "Hubo un problema al emitir la póliza.", [{ text: "OK" }]);
+              }
+            } catch (error) {
+              console.error("Error al emitir la póliza:", error);
+              Alert.alert("Error", "Ocurrió un error inesperado.", [{ text: "OK" }]);
+            } finally {
+              setIsLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+  
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.safeContainer}>
+        <CustomHeader title="Detalles de la Cotización" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
+          <Text style={styles.loadingText}>Cargando detalles...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -57,7 +120,7 @@ export default function QuoteDetails({ route, navigation }) {
                 </Text>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Asegurado: </Text>
-                  {quoteDetails.nombreAsegurado|| "Cargando..."}
+                  {quoteDetails.nombreAsegurado || "Cargando..."}
                 </Text>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Teléfono del asegurado: </Text>
@@ -85,7 +148,7 @@ export default function QuoteDetails({ route, navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.goBack()}
+            onPress={handleEmitir}
           >
             <Text style={styles.textButton}>Emitir</Text>
           </TouchableOpacity>
@@ -158,5 +221,14 @@ const styles = StyleSheet.create({
     color: AppColors.TEXT_WHITE,
     fontSize: 14,
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
   },
 });

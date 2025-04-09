@@ -39,7 +39,7 @@ export default function QuoteScreen({ navigation, route }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://192.168.106.15:3001/nar/seguros/tipo/${tipo}`);
+      const response = await fetch(`http://192.168.1.73:3001/nar/seguros/tipo/${tipo}`);
       const data = await response.json();
       navigation.navigate('DatosTitular', { seguros: data, tipo, userId });
     } catch (err) {
