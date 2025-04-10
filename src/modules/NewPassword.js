@@ -29,7 +29,7 @@ export default function NewPassword() {
     }
 
     try {
-      const response = await fetch('http://192.168.106.15:3001/nar/usuarios/recuperacion/cambiar', {
+      const response = await fetch('http://192.168.100.15:3001/nar/usuarios/recuperacion/cambiar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

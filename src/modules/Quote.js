@@ -1,68 +1,92 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
-import AppColors from '../kernel/AppColors';
-import CustomHeader from '../modules/CustomHeader';
-import { useEffect } from 'react';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator,
+} from "react-native";
+import AppColors from "../kernel/AppColors";
+import CustomHeader from "../modules/CustomHeader";
+import { useEffect } from "react";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function QuoteScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); 
-  
+  const [error, setError] = useState(null);
 
-    const [userId, setUserId] = useState(null);
-  
-    useEffect(() => {
-      const obtenerUserId = async () => {
-        try {
-          const id = await AsyncStorage.getItem("userId");
-          if (id) {
-            setUserId(id);
-            console.log("🚀 ID del usuario recuperado en QuoteScreen:", id);
-          } else {
-            console.warn("⚠️ No se encontró userId en AsyncStorage.");
-          }
-        } catch (error) {
-          console.error("❌ Error al recuperar userId:", error);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const obtenerUserId = async () => {
+      try {
+        const id = await AsyncStorage.getItem("userId");
+        if (id) {
+          setUserId(id);
+          console.log("🚀 ID del usuario recuperado en QuoteScreen:", id);
+        } else {
+          console.warn("⚠️ No se encontró userId en AsyncStorage.");
         }
-      };
-      obtenerUserId();
-    }, []);
-  
-    console.log("Milk dice id del usuario en QuoteScreen:", userId);
+      } catch (error) {
+        console.error("❌ Error al recuperar userId:", error);
+      }
+    };
+    obtenerUserId();
+  }, []);
 
-  
+  console.log("Milk dice id del usuario en QuoteScreen:", userId);
+
   const fetchSeguros = async (tipo) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://192.168.1.73:3001/nar/seguros/tipo/${tipo}`);
+      const response = await fetch(
+        `http://192.168.100.15:3001/nar/seguros/tipo/${tipo}`
+      );
       const data = await response.json();
-      navigation.navigate('DatosTitular', { seguros: data, tipo, userId });
+      navigation.navigate("DatosTitular", { seguros: data, tipo, userId });
     } catch (err) {
-      setError('Error al obtener los seguros');
+      setError("Error al obtener los seguros");
     } finally {
       setLoading(false);
     }
   };
 
   const aseguradoras = [
-    { nombre: "Seguro de vida", tipo: "vida", imagen: require("../../assets/img/seguro-de-vida.png") },
-    { nombre: "Seguro de gastos médicos", tipo: "salud", imagen: require("../../assets/img/gastos-medicos.png") },
-    { nombre: "Seguro de viaje", tipo: "viaje", imagen: require("../../assets/img/seguro-de-viaje.png") },
+    {
+      nombre: "Seguro de vida",
+      tipo: "vida",
+      imagen: require("../../assets/img/seguro-de-vida.png"),
+    },
+    {
+      nombre: "Seguro de gastos médicos",
+      tipo: "salud",
+      imagen: require("../../assets/img/gastos-medicos.png"),
+    },
+    {
+      nombre: "Seguro de viaje",
+      tipo: "viaje",
+      imagen: require("../../assets/img/seguro-de-viaje.png"),
+    },
   ];
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <CustomHeader title="Cotizar" />
       <View style={styles.container}>
-        {loading && <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />}
+        {loading && (
+          <ActivityIndicator size="large" color={AppColors.MAIN_COLOR} />
+        )}
         {error && <Text style={styles.errorText}>{error}</Text>}
         {aseguradoras.map((aseguradora, index) => (
-          <TouchableOpacity key={index} style={styles.card} onPress={() => fetchSeguros(aseguradora.tipo)}>
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => fetchSeguros(aseguradora.tipo)}
+          >
             <Image source={aseguradora.imagen} style={styles.icon} />
             <Text style={styles.cardText}>{aseguradora.nombre}</Text>
           </TouchableOpacity>
@@ -74,9 +98,29 @@ export default function QuoteScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: AppColors.BACKGROUND },
-  container: { flex: 1, padding: 20, alignItems: 'center', justifyContent: 'center' },
-  card: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', width: '100%', padding: 16, marginVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: AppColors.MAIN_COLOR },
-  cardText: { fontSize: 18, marginLeft: 16, fontFamily: "InriaSerif_Bold", color: '#333' },
-  icon: { width: 45, height: 45, resizeMode: 'contain' },
-  errorText: { color: 'red', marginVertical: 10 },
+  container: {
+    flex: 1,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    width: "100%",
+    padding: 16,
+    marginVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: AppColors.MAIN_COLOR,
+  },
+  cardText: {
+    fontSize: 18,
+    marginLeft: 16,
+    fontFamily: "InriaSerif_Bold",
+    color: "#333",
+  },
+  icon: { width: 45, height: 45, resizeMode: "contain" },
+  errorText: { color: "red", marginVertical: 10 },
 });

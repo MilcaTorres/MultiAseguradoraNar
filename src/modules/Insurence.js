@@ -25,7 +25,7 @@ export default function Insurance({ navigation }) {
         setIsLoading(true);
         setError(null);
         
-        const API_URL = `http://192.168.1.73:3001/nar/cotizaciones/asegurado/${idAsegurado}`;
+        const API_URL = `http://192.168.100.15:3001/nar/cotizaciones/asegurado/${idAsegurado}`;
         console.log("Consultando API:", API_URL); // Verifica que la URL es correcta
 
         const response = await fetch(API_URL);
@@ -103,7 +103,8 @@ export default function Insurance({ navigation }) {
               <Image source={require("../../assets/img/life-insurance.png")} style={styles.insuranceImage} />
               <View style={styles.textContainer}>
                 <Text style={styles.insuranceTitle}>{cotizacion.nombreSeguro || `Seguro de Vida`}</Text>
-                <Text style={styles.priceText}>Monto de la prima: ${cotizacion.precioFinal ?? "1,000"}</Text>
+                <Text style={styles.priceText}>Monto de la prima:</Text>
+                <Text>${cotizacion.precioFinal ?? "1,000"}</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("DatosSeguro", { idCotizacion: cotizacion._id || cotizacion.id })}>

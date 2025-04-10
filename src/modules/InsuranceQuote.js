@@ -1,23 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import { useRoute } from "@react-navigation/native";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
+import RenderHtml from "react-native-render-html";
+import { useWindowDimensions } from "react-native";
 
 export default function InsuranceQuote({ navigation }) {
+  const { width } = useWindowDimensions();
   const route = useRoute();
   const { idCotizacion } = route.params;
 
   const [emision, setEmisiones] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const API_URL = `http://192.168.1.73:3001/nar/cotizaciones/id/${idCotizacion}`;
+  const API_URL = `http://192.168.100.15:3001/nar/cotizaciones/id/${idCotizacion}`;
 
   useEffect(() => {
     const fetchCotizacionDetails = async () => {
       try {
         setIsLoading(true);
         const response = await fetch(API_URL);
-        
+
         if (!response.ok) {
           throw new Error("Error de red, por favor intenta de nuevo");
         }
@@ -51,28 +63,37 @@ export default function InsuranceQuote({ navigation }) {
           onPress: async () => {
             try {
               setIsLoading(true);
-              const response = await fetch(`http://192.168.1.73:3001/nar/cotizaciones/emitida/${idCotizacion}`, {
-                method: 'PUT',
-              });
-  
+              const response = await fetch(
+                `http://192.168.100.15:3001/nar/cotizaciones/emitida/${idCotizacion}`,
+                {
+                  method: "PUT",
+                }
+              );
+
               const responseText = await response.text();
-              const responseData = JSON.parse(responseText);  // Aquí agregamos la comprobación
-  
+              const responseData = JSON.parse(responseText); // Aquí agregamos la comprobación
+
               if (responseData.success) {
                 Alert.alert(
                   "¡Emitido!",
                   "La póliza ha sido emitida al correo del cliente.",
-                  [{
-                    text: "OK",
-                    onPress: () => navigation.navigate("Cotizar") //Duda a donde lo re direcciona
-                  }]
+                  [
+                    {
+                      text: "OK",
+                      onPress: () => navigation.navigate("Cotizar"), //Duda a donde lo re direcciona
+                    },
+                  ]
                 );
               } else {
-                Alert.alert("Error", "Hubo un problema al emitir la póliza.", [{ text: "OK" }]);
+                Alert.alert("Error", "Hubo un problema al emitir la póliza.", [
+                  { text: "OK" },
+                ]);
               }
             } catch (error) {
               console.error("Error al emitir la póliza:", error);
-              Alert.alert("Error", "Ocurrió un error inesperado.", [{ text: "OK" }]);
+              Alert.alert("Error", "Ocurrió un error inesperado.", [
+                { text: "OK" },
+              ]);
             } finally {
               setIsLoading(false);
             }
@@ -81,7 +102,7 @@ export default function InsuranceQuote({ navigation }) {
       ]
     );
   };
-  
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -99,7 +120,9 @@ export default function InsuranceQuote({ navigation }) {
       <SafeAreaView style={styles.safeArea}>
         <CustomHeader title="Detalle de Cotización" />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>No se encontraron datos de la cotización</Text>
+          <Text style={styles.errorText}>
+            No se encontraron datos de la cotización
+          </Text>
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.goBack()}
@@ -121,47 +144,70 @@ export default function InsuranceQuote({ navigation }) {
             source={require("../../assets/img/life-insurance.png")}
             style={styles.headerImage}
           />
-          <Text style={styles.insuranceTitle}>{emision.nombreSeguro || "Seguro de Vida"}</Text>
+          <Text style={styles.insuranceTitle}>
+            {emision.nombreSeguro || "Seguro de Vida"}
+          </Text>
         </View>
 
         <View style={styles.infoCard}>
           <Text style={styles.sectionTitle}>Datos del Asegurado</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Nombre:</Text>
-            <Text style={styles.infoValue}>{emision.nombreAsegurado || "No disponible"}</Text>
+            <Text style={styles.infoValue}>
+              {emision.nombreAsegurado || "No disponible"}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Teléfono:</Text>
-            <Text style={styles.infoValue}>{emision.telefonoAsegurado || "No disponible"}</Text>
+            <Text style={styles.infoValue}>
+              {emision.telefonoAsegurado || "No disponible"}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Edad:</Text>
-            <Text style={styles.infoValue}>{emision.edadAsegurado || "N/A"} años</Text>
+            <Text style={styles.infoValue}>
+              {emision.edadAsegurado || "N/A"} años
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Correo:</Text>
-            <Text style={styles.infoValue}>{emision.correoAsegurado || "No disponible"}</Text>
+            <Text style={styles.infoValue}>
+              {emision.correoAsegurado || "No disponible"}
+            </Text>
           </View>
         </View>
 
         <View style={styles.infoCard}>
           <Text style={styles.sectionTitle}>Coberturas</Text>
           <View style={styles.coverageItem}>
-            <Text style={styles.bulletPoint}>•</Text>
-            <Text style={styles.coverageText}>{emision.cobertura || "Cobertura básica"}</Text>
+            <RenderHtml
+              contentWidth={width}
+              source={{
+                html: `<div>${emision.cobertura || "Cobertura básica"}</div>`,
+              }}
+              baseStyle={styles.coverageText}
+            />
           </View>
         </View>
 
         <View style={styles.priceCard}>
           <Text style={styles.priceLabel}>Precio Final:</Text>
-          <Text style={styles.priceValue}>${emision.precioFinal || "1,000"}</Text>
+          <Text style={styles.priceValue}>
+            ${emision.precioFinal || "1,000"}
+          </Text>
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.actionButton, styles.backButton]} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.backButton]}
+            onPress={() => navigation.goBack()}
+          >
             <Text style={styles.buttonText}>Regresar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionButton, styles.emitButton]} onPress={handleEmitir}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.emitButton]}
+            onPress={handleEmitir}
+          >
             <Text style={styles.buttonText}>Emitir</Text>
           </TouchableOpacity>
         </View>

@@ -49,7 +49,7 @@ export default function Statistics() {
 
       // Obtener cotizaciones y emisiones
       const response = await fetch(
-        `http://192.168.106.15:3001/nar/usuarios/cotizacionesYEmisiones/${id}`
+        `http://192.168.100.15:3001/nar/usuarios/cotizacionesYEmisiones/${id}`
       );
       const result = await response.json();
 
@@ -65,7 +65,7 @@ export default function Statistics() {
 
       // Obtener cuota mensual
       const cuotaResponse = await fetch(
-        "http://192.168.106.15:3001/nar/cuotas/"
+        "http://192.168.100.15:3001/nar/cuotas/"
       );
       const cuotaResult = await cuotaResponse.json();
       if (Array.isArray(cuotaResult) && cuotaResult[0]?.cuotaMensual) {

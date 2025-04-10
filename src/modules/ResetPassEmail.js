@@ -15,7 +15,7 @@ export default function ResetPassEmail() {
     }
 
     try {
-      const response = await fetch('http://192.168.106.15:3001/nar/usuarios/recuperacion/generar', {
+      const response = await fetch('http://192.168.100.15:3001/nar/usuarios/recuperacion/generar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo: email }), // Ajuste para coincidir con el backend

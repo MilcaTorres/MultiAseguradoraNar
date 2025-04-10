@@ -54,7 +54,7 @@ export default function BlockedHome({ navigation }) {
       }
 
       const response = await fetch(
-        `http://192.168.106.15:3001/nar/usuarios/reactivacionesActive/${id}`,
+        `http://192.168.100.15:3001/nar/usuarios/reactivacionesActive/${id}`,
         {
           method: "PUT",
           headers: {

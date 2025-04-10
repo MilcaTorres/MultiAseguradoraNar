@@ -9,21 +9,27 @@ import {
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "./CustomHeader";
 import { useEffect, useState } from "react";
+import RenderHTML from "react-native-render-html";
+import { useWindowDimensions } from "react-native";
 
 export default function PolicyDetails({ route, navigation }) {
+  const { width } = useWindowDimensions();
   const { policy } = route.params;
   const [policyDetails, setPolicyDetails] = useState({});
 
   useEffect(() => {
     const fetchPolicyDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.106.15:3001/nar/emisiones/id/${policy.idPoliza}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-  
+        const response = await fetch(
+          `http://192.168.100.15:3001/nar/emisiones/id/${policy.idPoliza}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
         if (!response.ok) {
           throw new Error(`Error en la solicitud: ${response.statusText}`);
         }
@@ -33,10 +39,9 @@ export default function PolicyDetails({ route, navigation }) {
         console.error("Error al obtener la póliza:", error.message);
       }
     };
-  
+
     fetchPolicyDetails();
   }, [policy]);
-  
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -51,6 +56,10 @@ export default function PolicyDetails({ route, navigation }) {
           <View style={styles.card}>
             <View style={styles.cardContent}>
               <View style={styles.textContainer}>
+                <Text style={styles.text}>
+                  <Text style={styles.label}>Correo del titular: </Text>
+                  {policyDetails.correoTitular || "Cargando..."}
+                </Text>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Asegurado: </Text>
                   {policyDetails.nombreAsegurado || "Cargando..."}
@@ -71,10 +80,19 @@ export default function PolicyDetails({ route, navigation }) {
                   <Text style={styles.label}>Tipo de seguro: </Text>
                   {policyDetails.tipoSeguro || "Cargando..."}
                 </Text>
-                <Text style={styles.text}>
+                <View style={{ marginTop: 10 }}>
                   <Text style={styles.label}>Cobertura: </Text>
-                  {policyDetails.cobertura || "Cargando..."}
-                </Text>
+                  {policyDetails.cobertura ? (
+                    <RenderHTML
+                      contentWidth={width}
+                      source={{ html: `<div>${policyDetails.cobertura}</div>` }}
+                      ignoredDomTags={["font"]}
+                    />
+                  ) : (
+                    <Text style={styles.text}>Cargando...</Text>
+                  )}
+                </View>
+
                 <Text style={styles.text}>
                   <Text style={styles.label}>Vigencia: </Text>
                   {policyDetails.vigencia || "Cargando..."}

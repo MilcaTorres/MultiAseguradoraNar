@@ -11,8 +11,11 @@ import {
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "./CustomHeader";
 import { useEffect, useState } from "react";
+import RenderHTML from "react-native-render-html";
+import { useWindowDimensions } from "react-native";
 
 export default function QuoteDetails({ route, navigation }) {
+  const { width } = useWindowDimensions();
   const { quote } = route.params;
   const [quoteDetails, setQuoteDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -20,12 +23,15 @@ export default function QuoteDetails({ route, navigation }) {
   useEffect(() => {
     const fetchQuoteDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.1.73:3001/nar/cotizaciones/id/${quote.idCotizacion}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `http://192.168.100.15:3001/nar/cotizaciones/id/${quote.idCotizacion}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Error en la solicitud: ${response.statusText}`);
@@ -53,32 +59,41 @@ export default function QuoteDetails({ route, navigation }) {
           onPress: async () => {
             try {
               setIsLoading(true);
-              const response = await fetch(`http://192.168.1.73:3001/nar/cotizaciones/emitida/${quote.idCotizacion}`, {
-                method: 'PUT',
-              });
-  
+              const response = await fetch(
+                `http://192.168.100.15:3001/nar/cotizaciones/emitida/${quote.idCotizacion}`,
+                {
+                  method: "PUT",
+                }
+              );
+
               // Obtener el texto de la respuesta
               const responseText = await response.text();
               console.log("Response Text:", responseText);
-  
+
               // Analizar la respuesta como JSON
               const responseData = JSON.parse(responseText);
-  
+
               if (responseData.success) {
                 Alert.alert(
                   "¡Emitido!",
                   "La póliza ha sido emitida al correo del cliente.",
-                  [{
-                    text: "OK",
-                    onPress: () => navigation.navigate("Cotizar") // Asegúrate de que "Cotizar" sea una pantalla válida en tu navegación
-                  }]
+                  [
+                    {
+                      text: "OK",
+                      onPress: () => navigation.navigate("Cotizar"), // Asegúrate de que "Cotizar" sea una pantalla válida en tu navegación
+                    },
+                  ]
                 );
               } else {
-                Alert.alert("Error", "Hubo un problema al emitir la póliza.", [{ text: "OK" }]);
+                Alert.alert("Error", "Hubo un problema al emitir la póliza.", [
+                  { text: "OK" },
+                ]);
               }
             } catch (error) {
               console.error("Error al emitir la póliza:", error);
-              Alert.alert("Error", "Ocurrió un error inesperado.", [{ text: "OK" }]);
+              Alert.alert("Error", "Ocurrió un error inesperado.", [
+                { text: "OK" },
+              ]);
             } finally {
               setIsLoading(false);
             }
@@ -87,7 +102,6 @@ export default function QuoteDetails({ route, navigation }) {
       ]
     );
   };
-  
 
   if (isLoading) {
     return (
@@ -107,9 +121,7 @@ export default function QuoteDetails({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <View style={styles.labelName}>
-            <Text style={styles.textName}>
-              {quoteDetails.nombreSeguro}
-            </Text>
+            <Text style={styles.textName}>{quoteDetails.nombreSeguro}</Text>
           </View>
           <View style={styles.card}>
             <View style={styles.cardContent}>
@@ -134,10 +146,18 @@ export default function QuoteDetails({ route, navigation }) {
                   <Text style={styles.label}>Correo del asegurado: </Text>
                   {quoteDetails.correoAsegurado || "Cargando..."}
                 </Text>
-                <Text style={styles.text}>
+                <View style={{ marginTop: 10 }}>
                   <Text style={styles.label}>Cobertura: </Text>
-                  {quoteDetails.cobertura || "Cargando..."}
-                </Text>
+                  {quoteDetails.cobertura ? (
+                    <RenderHTML
+                      contentWidth={width}
+                      source={{ html: `<div>${quoteDetails.cobertura}</div>` }}
+                      ignoredDomTags={["font"]}
+                    />
+                  ) : (
+                    <Text style={styles.text}>Cargando...</Text>
+                  )}
+                </View>
                 <Text style={styles.text}>
                   <Text style={styles.label}>Precio final: </Text>$
                   {quoteDetails.precioFinal || "Cargando..."}
@@ -146,10 +166,7 @@ export default function QuoteDetails({ route, navigation }) {
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleEmitir}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleEmitir}>
             <Text style={styles.textButton}>Emitir</Text>
           </TouchableOpacity>
         </View>

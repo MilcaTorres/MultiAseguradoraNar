@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, LogBox, StyleSheet, View } from 'react-native';
 import * as Font from "expo-font";
 import * as SplashScreen from 'expo-splash-screen';
 import LottieView from 'lottie-react-native';
@@ -9,6 +9,15 @@ import { useEffect, useState, useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AppColors from './src/kernel/AppColors';
 import StackNavigator from './src/navigation/StackNavigator';
+
+// Ignorar warning de defaultProps
+LogBox.ignoreLogs([
+  'defaultProps will be removed', // cualquier advertencia sobre defaultProps
+  'TNodeChildrenRenderer',
+  'MemorizedTNodeRenderer',
+  'bound renderChildren',
+]);
+
 
 SplashScreen.preventAutoHideAsync();
 

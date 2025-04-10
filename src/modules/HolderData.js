@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Alert, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Alert,
+  Platform,
+} from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import AppColors from "../kernel/AppColors";
 import CustomHeader from "../modules/CustomHeader";
@@ -151,8 +161,24 @@ export default function HolderDataScreen({ navigation, route }) {
   };
 
   const validateData = (data) => {
-    const { nombre, apellidoPaterno, apellidoMaterno, fechaNacimiento, correo, rfc, telefono } = data;
-    if (!nombre || !apellidoPaterno || !apellidoMaterno || !fechaNacimiento || !correo || !rfc || !telefono) {
+    const {
+      nombre,
+      apellidoPaterno,
+      apellidoMaterno,
+      fechaNacimiento,
+      correo,
+      rfc,
+      telefono,
+    } = data;
+    if (
+      !nombre ||
+      !apellidoPaterno ||
+      !apellidoMaterno ||
+      !fechaNacimiento ||
+      !correo ||
+      !rfc ||
+      !telefono
+    ) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return false;
     }
@@ -178,18 +204,26 @@ export default function HolderDataScreen({ navigation, route }) {
     }
 
     try {
-      const response = await fetch(`http://192.168.1.73:3001/nar/clientes/rfc/${existingHolderRFC}`);
+      const response = await fetch(
+        `http://192.168.100.15:3001/nar/clientes/rfc/${existingHolderRFC}`
+      );
       const result = await response.json();
 
       if (result) {
         setExistingHolderData(result);
         setHolderData(result);
         setIsExistingHolder(true);
-        Alert.alert("Titular encontrado", "Se encontró el titular con el RFC proporcionado");
+        Alert.alert(
+          "Titular encontrado",
+          "Se encontró el titular con el RFC proporcionado"
+        );
       } else {
         setExistingHolderData(null);
         setIsExistingHolder(false);
-        Alert.alert("Titular no encontrado", "No se encontró ningún titular con el RFC proporcionado");
+        Alert.alert(
+          "Titular no encontrado",
+          "No se encontró ningún titular con el RFC proporcionado"
+        );
       }
     } catch (error) {
       console.error("Error al buscar titular:", error);
@@ -199,112 +233,142 @@ export default function HolderDataScreen({ navigation, route }) {
 
   const submitData = async () => {
     if (isExistingHolder && !existingHolderData) {
-      Alert.alert("Error", "Debe buscar un titular existente antes de continuar");
+      Alert.alert(
+        "Error",
+        "Debe buscar un titular existente antes de continuar"
+      );
       return;
     }
-  
+
     if (!isExistingHolder && !validateData(holderData)) return;
-  
+
     try {
       const holderDataWithUserId = {
         ...holderData,
         userId,
         edad: calculateAge(holderData.fechaNacimiento),
       };
-  
+
       let idCliente;
-  
+
       if (isExistingHolder) {
         idCliente = existingHolderData._id;
       } else {
         // Registrar al titular como cliente
-        const responseHolder = await fetch("http://192.168.1.73:3001/nar/clientes/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(holderDataWithUserId),
-        });
-  
+        const responseHolder = await fetch(
+          "http://192.168.100.15:3001/nar/clientes/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(holderDataWithUserId),
+          }
+        );
+
         if (!responseHolder.ok) {
-          throw new Error(`Error al registrar el titular: ${responseHolder.statusText}`);
+          throw new Error(
+            `Error al registrar el titular: ${responseHolder.statusText}`
+          );
         }
-  
+
         const resultHolder = await responseHolder.json();
         console.log("Titular registrado:", resultHolder);
-  
+
         if (!resultHolder || !resultHolder._id) {
           throw new Error("No se obtuvo el id del titular al registrar.");
         }
-  
+
         idCliente = resultHolder._id;
       }
-  
+
       let idAsegurado;
-  
+
       if (isHolderInsured) {
         const insuredHolderData = {
           ...holderDataWithUserId,
           idCliente,
         };
-  
-        const responseInsuredHolder = await fetch("http://192.168.1.73:3001/nar/asegurados/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(insuredHolderData),
-        });
-  
+
+        const responseInsuredHolder = await fetch(
+          "http://192.168.100.15:3001/nar/asegurados/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(insuredHolderData),
+          }
+        );
+
         if (!responseInsuredHolder.ok) {
-          throw new Error(`Error al registrar el asegurado: ${responseInsuredHolder.statusText}`);
+          throw new Error(
+            `Error al registrar el asegurado: ${responseInsuredHolder.statusText}`
+          );
         }
-  
+
         const resultInsuredHolder = await responseInsuredHolder.json();
-        console.log("Titular registrado también como asegurado:", resultInsuredHolder);
-  
+        console.log(
+          "Titular registrado también como asegurado:",
+          resultInsuredHolder
+        );
+
         if (!resultInsuredHolder || !resultInsuredHolder._id) {
           throw new Error("No se obtuvo el id del asegurado al registrar.");
         }
-  
+
         idAsegurado = resultInsuredHolder._id;
       } else {
         if (!validateData(insuredData)) return;
-  
+
         const insuredDataWithHolderId = {
           ...insuredData,
           userId,
           edad: calculateAge(insuredData.fechaNacimiento),
           idCliente,
         };
-  
-        const responseInsured = await fetch("http://192.168.1.73:3001/nar/asegurados/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(insuredDataWithHolderId),
-        });
-  
+
+        const responseInsured = await fetch(
+          "http://192.168.100.15:3001/nar/asegurados/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(insuredDataWithHolderId),
+          }
+        );
+
         if (!responseInsured.ok) {
-          throw new Error(`Error al registrar el asegurado: ${responseInsured.statusText}`);
+          throw new Error(
+            `Error al registrar el asegurado: ${responseInsured.statusText}`
+          );
         }
-  
+
         const resultInsured = await responseInsured.json();
         console.log("Asegurado registrado:", resultInsured);
-  
+
         if (!resultInsured || !resultInsured._id) {
           throw new Error("No se obtuvo el id del asegurado al registrar.");
         }
-  
+
         idAsegurado = resultInsured._id;
       }
-  
+
       // Consultar seguros disponibles
-      const responseSeguros = await fetch(`http://192.168.1.73:3001/nar/seguros/tipo/${tipo}`);
+      const responseSeguros = await fetch(
+        `http://192.168.100.15:3001/nar/seguros/tipo/${tipo}`
+      );
       const segurosResponse = await responseSeguros.json();
-  
-      if (!segurosResponse.success || !segurosResponse.data || segurosResponse.data.length === 0) {
-        Alert.alert("Error", "No se encontraron seguros para el tipo seleccionado.");
+
+      if (
+        !segurosResponse.success ||
+        !segurosResponse.data ||
+        segurosResponse.data.length === 0
+      ) {
+        Alert.alert(
+          "Error",
+          "No se encontraron seguros para el tipo seleccionado."
+        );
         return;
       }
-  
+
       console.log("Seguros disponibles:", segurosResponse.data);
-  
+
       // Registrar cotizaciones para cada seguro disponible
       const cotizaciones = segurosResponse.data.map(async (seguro) => {
         const cotizacionData = {
@@ -313,36 +377,46 @@ export default function HolderDataScreen({ navigation, route }) {
           idAsegurado,
           idSeguro: seguro.idSeguro,
         };
-  
+
         try {
-          const responseCotizacion = await fetch("http://192.168.1.73:3001/nar/cotizaciones/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(cotizacionData),
-          });
-  
+          const responseCotizacion = await fetch(
+            "http://192.168.100.15:3001/nar/cotizaciones/",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(cotizacionData),
+            }
+          );
+
           const responseText = await responseCotizacion.text();
           if (!responseCotizacion.ok) {
-            throw new Error(`Error ${responseCotizacion.status}: ${responseText}`);
+            throw new Error(
+              `Error ${responseCotizacion.status}: ${responseText}`
+            );
           }
-  
+
           const resultCotizacion = JSON.parse(responseText);
           console.log("Cotización generada:", resultCotizacion);
         } catch (error) {
           console.error("Error al generar la cotización:", error);
-          Alert.alert("Error", `Hubo un problema al generar la cotización: ${error.message}`);
+          Alert.alert(
+            "Error",
+            `Hubo un problema al generar la cotización: ${error.message}`
+          );
         }
       });
-  
+
       await Promise.all(cotizaciones);
-  
+
       navigation.navigate("Seguros", { tipo, userId, idAsegurado });
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      Alert.alert("Error", "Hubo un problema al registrar los datos. Intenta nuevamente.");
+      Alert.alert(
+        "Error",
+        "Hubo un problema al registrar los datos. Intenta nuevamente."
+      );
     }
   };
-  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -356,14 +430,30 @@ export default function HolderDataScreen({ navigation, route }) {
           <View style={styles.radioContainer}>
             <Text style={styles.label}>¿Ya ha sido titular antes?</Text>
             <View style={styles.radioGroup}>
-              <TouchableOpacity onPress={() => setIsExistingHolder(true)} style={styles.radioButton}>
-                <View style={[styles.outerCircle, isExistingHolder && styles.outerCircleSelected]}>
+              <TouchableOpacity
+                onPress={() => setIsExistingHolder(true)}
+                style={styles.radioButton}
+              >
+                <View
+                  style={[
+                    styles.outerCircle,
+                    isExistingHolder && styles.outerCircleSelected,
+                  ]}
+                >
                   {isExistingHolder && <View style={styles.innerCircle} />}
                 </View>
                 <Text style={styles.radioText}>Sí</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setIsExistingHolder(false)} style={styles.radioButton}>
-                <View style={[styles.outerCircle, !isExistingHolder && styles.outerCircleSelected]}>
+              <TouchableOpacity
+                onPress={() => setIsExistingHolder(false)}
+                style={styles.radioButton}
+              >
+                <View
+                  style={[
+                    styles.outerCircle,
+                    !isExistingHolder && styles.outerCircleSelected,
+                  ]}
+                >
                   {!isExistingHolder && <View style={styles.innerCircle} />}
                 </View>
                 <Text style={styles.radioText}>No</Text>
@@ -385,8 +475,13 @@ export default function HolderDataScreen({ navigation, route }) {
                 }}
                 style={styles.input}
               />
-              {errors.existingHolderRFC && <Text style={styles.errorText}>{errors.existingHolderRFC}</Text>}
-              <TouchableOpacity style={styles.button} onPress={searchExistingHolder}>
+              {errors.existingHolderRFC && (
+                <Text style={styles.errorText}>{errors.existingHolderRFC}</Text>
+              )}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={searchExistingHolder}
+              >
                 <Text style={styles.buttonText}>Buscar</Text>
               </TouchableOpacity>
             </View>
@@ -394,29 +489,89 @@ export default function HolderDataScreen({ navigation, route }) {
 
           {!isExistingHolder && (
             <>
-              <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "nombre", text)} />
-              {errors.holder.nombre && <Text style={styles.errorText}>{errors.holder.nombre}</Text>}
-              <TextInput placeholder="Apellido Paterno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoPaterno", text)} />
-              {errors.holder.apellidoPaterno && <Text style={styles.errorText}>{errors.holder.apellidoPaterno}</Text>}
-              <TextInput placeholder="Apellido Materno" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "apellidoMaterno", text)} />
-              {errors.holder.apellidoMaterno && <Text style={styles.errorText}>{errors.holder.apellidoMaterno}</Text>}
-              <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "rfc", text)} />
-              {errors.holder.rfc && <Text style={styles.errorText}>{errors.holder.rfc}</Text>}
-              <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "telefono", text)} />
-              {errors.holder.telefono && <Text style={styles.errorText}>{errors.holder.telefono}</Text>}
-              <TextInput placeholder="Correo Electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setHolderData, "correo", text)} />
-              {errors.holder.correo && <Text style={styles.errorText}>{errors.holder.correo}</Text>}
+              <TextInput
+                placeholder="Nombre"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setHolderData, "nombre", text)
+                }
+              />
+              {errors.holder.nombre && (
+                <Text style={styles.errorText}>{errors.holder.nombre}</Text>
+              )}
+              <TextInput
+                placeholder="Apellido Paterno"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setHolderData, "apellidoPaterno", text)
+                }
+              />
+              {errors.holder.apellidoPaterno && (
+                <Text style={styles.errorText}>
+                  {errors.holder.apellidoPaterno}
+                </Text>
+              )}
+              <TextInput
+                placeholder="Apellido Materno"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setHolderData, "apellidoMaterno", text)
+                }
+              />
+              {errors.holder.apellidoMaterno && (
+                <Text style={styles.errorText}>
+                  {errors.holder.apellidoMaterno}
+                </Text>
+              )}
+              <TextInput
+                placeholder="RFC"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setHolderData, "rfc", text)
+                }
+              />
+              {errors.holder.rfc && (
+                <Text style={styles.errorText}>{errors.holder.rfc}</Text>
+              )}
+              <TextInput
+                placeholder="Teléfono"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setHolderData, "telefono", text)
+                }
+              />
+              {errors.holder.telefono && (
+                <Text style={styles.errorText}>{errors.holder.telefono}</Text>
+              )}
+              <TextInput
+                placeholder="Correo Electrónico"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setHolderData, "correo", text)
+                }
+              />
+              {errors.holder.correo && (
+                <Text style={styles.errorText}>{errors.holder.correo}</Text>
+              )}
 
               {/* Fecha de Nacimiento Titular */}
               <TouchableOpacity onPress={() => setShowDatePickerHolder(true)}>
                 <TextInput
                   style={styles.input}
-                  value={`${getDateWithCero(holderData.fechaNacimiento.getDate())}/${getMonthAsText(holderData.fechaNacimiento.getMonth())}/${holderData.fechaNacimiento.getFullYear()}`}
+                  value={`${getDateWithCero(
+                    holderData.fechaNacimiento.getDate()
+                  )}/${getMonthAsText(
+                    holderData.fechaNacimiento.getMonth()
+                  )}/${holderData.fechaNacimiento.getFullYear()}`}
                   editable={false}
                   placeholder="Selecciona una fecha"
                 />
               </TouchableOpacity>
-              {errors.holder.fechaNacimiento && <Text style={styles.errorText}>{errors.holder.fechaNacimiento}</Text>}
+              {errors.holder.fechaNacimiento && (
+                <Text style={styles.errorText}>
+                  {errors.holder.fechaNacimiento}
+                </Text>
+              )}
 
               <DateTimePicker
                 mode="date"
@@ -430,21 +585,41 @@ export default function HolderDataScreen({ navigation, route }) {
                 onCancel={() => setShowDatePickerHolder(false)}
                 confirmTextIOS="Listo"
                 cancelTextIOS="Cancelar"
+                // Este prop ayuda a mejorar la apertura en iOS
+                pickerContainerStyleIOS={{ justifyContent: "center" }}
               />
             </>
           )}
 
           <View style={styles.radioContainer}>
-            <Text style={styles.label}>¿El titular también será el asegurado?</Text>
+            <Text style={styles.label}>
+              ¿El titular también será el asegurado?
+            </Text>
             <View style={styles.radioGroup}>
-              <TouchableOpacity onPress={() => handleHolderInsuredChange(true)} style={styles.radioButton}>
-                <View style={[styles.outerCircle, isHolderInsured && styles.outerCircleSelected]}>
+              <TouchableOpacity
+                onPress={() => handleHolderInsuredChange(true)}
+                style={styles.radioButton}
+              >
+                <View
+                  style={[
+                    styles.outerCircle,
+                    isHolderInsured && styles.outerCircleSelected,
+                  ]}
+                >
                   {isHolderInsured && <View style={styles.innerCircle} />}
                 </View>
                 <Text style={styles.radioText}>Sí</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleHolderInsuredChange(false)} style={styles.radioButton}>
-                <View style={[styles.outerCircle, !isHolderInsured && styles.outerCircleSelected]}>
+              <TouchableOpacity
+                onPress={() => handleHolderInsuredChange(false)}
+                style={styles.radioButton}
+              >
+                <View
+                  style={[
+                    styles.outerCircle,
+                    !isHolderInsured && styles.outerCircleSelected,
+                  ]}
+                >
                   {!isHolderInsured && <View style={styles.innerCircle} />}
                 </View>
                 <Text style={styles.radioText}>No</Text>
@@ -457,29 +632,89 @@ export default function HolderDataScreen({ navigation, route }) {
               <View style={styles.welcome}>
                 <Text style={styles.text}>Datos Asegurado </Text>
               </View>
-              <TextInput placeholder="Nombre" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "nombre", text)} />
-              {errors.insured.nombre && <Text style={styles.errorText}>{errors.insured.nombre}</Text>}
-              <TextInput placeholder="Apellido Paterno" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "apellidoPaterno", text)} />
-              {errors.insured.apellidoPaterno && <Text style={styles.errorText}>{errors.insured.apellidoPaterno}</Text>}
-              <TextInput placeholder="Apellido Materno" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "apellidoMaterno", text)} />
-              {errors.insured.apellidoMaterno && <Text style={styles.errorText}>{errors.insured.apellidoMaterno}</Text>}
-              <TextInput placeholder="RFC" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "rfc", text)} />
-              {errors.insured.rfc && <Text style={styles.errorText}>{errors.insured.rfc}</Text>}
-              <TextInput placeholder="Teléfono" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "telefono", text)} />
-              {errors.insured.telefono && <Text style={styles.errorText}>{errors.insured.telefono}</Text>}
-              <TextInput placeholder="Correo Electrónico" style={styles.input} onChangeText={(text) => handleInputChange(setInsuredData, "correo", text)} />
-              {errors.insured.correo && <Text style={styles.errorText}>{errors.insured.correo}</Text>}
+              <TextInput
+                placeholder="Nombre"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setInsuredData, "nombre", text)
+                }
+              />
+              {errors.insured.nombre && (
+                <Text style={styles.errorText}>{errors.insured.nombre}</Text>
+              )}
+              <TextInput
+                placeholder="Apellido Paterno"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setInsuredData, "apellidoPaterno", text)
+                }
+              />
+              {errors.insured.apellidoPaterno && (
+                <Text style={styles.errorText}>
+                  {errors.insured.apellidoPaterno}
+                </Text>
+              )}
+              <TextInput
+                placeholder="Apellido Materno"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setInsuredData, "apellidoMaterno", text)
+                }
+              />
+              {errors.insured.apellidoMaterno && (
+                <Text style={styles.errorText}>
+                  {errors.insured.apellidoMaterno}
+                </Text>
+              )}
+              <TextInput
+                placeholder="RFC"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setInsuredData, "rfc", text)
+                }
+              />
+              {errors.insured.rfc && (
+                <Text style={styles.errorText}>{errors.insured.rfc}</Text>
+              )}
+              <TextInput
+                placeholder="Teléfono"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setInsuredData, "telefono", text)
+                }
+              />
+              {errors.insured.telefono && (
+                <Text style={styles.errorText}>{errors.insured.telefono}</Text>
+              )}
+              <TextInput
+                placeholder="Correo Electrónico"
+                style={styles.input}
+                onChangeText={(text) =>
+                  handleInputChange(setInsuredData, "correo", text)
+                }
+              />
+              {errors.insured.correo && (
+                <Text style={styles.errorText}>{errors.insured.correo}</Text>
+              )}
 
               {/* Fecha de Nacimiento Asegurado */}
               <TouchableOpacity onPress={() => setShowDatePickerInsured(true)}>
                 <TextInput
                   style={styles.input}
-                  value={`${getDateWithCero(insuredData.fechaNacimiento.getDate())}/${getMonthAsText(insuredData.fechaNacimiento.getMonth())}/${insuredData.fechaNacimiento.getFullYear()}`}
+                  value={`${getDateWithCero(
+                    insuredData.fechaNacimiento.getDate()
+                  )}/${getMonthAsText(
+                    insuredData.fechaNacimiento.getMonth()
+                  )}/${insuredData.fechaNacimiento.getFullYear()}`}
                   editable={false}
                   placeholder="Selecciona una fecha"
                 />
               </TouchableOpacity>
-              {errors.insured.fechaNacimiento && <Text style={styles.errorText}>{errors.insured.fechaNacimiento}</Text>}
+              {errors.insured.fechaNacimiento && (
+                <Text style={styles.errorText}>
+                  {errors.insured.fechaNacimiento}
+                </Text>
+              )}
 
               <DateTimePicker
                 mode="date"
@@ -545,11 +780,33 @@ const styles = StyleSheet.create({
   },
   radioContainer: { marginTop: 20 },
   label: { fontSize: 16, marginBottom: 10 },
-  radioGroup: { flexDirection: "row", justifyContent: "space-around", alignItems: "center" },
+  radioGroup: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
   radioButton: { flexDirection: "row", alignItems: "center", gap: 8 },
-  outerCircle: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: "#ccc", justifyContent: "center", alignItems: "center" },
+  outerCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   outerCircleSelected: { borderColor: AppColors.MAIN_COLOR },
-  innerCircle: { width: 12, height: 12, borderRadius: 6, backgroundColor: AppColors.MAIN_COLOR },
-  extraFormContainer: { marginTop: 30, paddingTop: 20, borderTopWidth: 1, borderTopColor: "#ccc" },
+  innerCircle: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: AppColors.MAIN_COLOR,
+  },
+  extraFormContainer: {
+    marginTop: 30,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+  },
   errorText: { color: "red", marginBottom: 5 },
 });
